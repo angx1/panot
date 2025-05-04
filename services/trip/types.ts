@@ -1,7 +1,7 @@
 export interface Location {
-  name: string;
-  latitude: number;
-  longitude: number;
+  nombre: string;
+  latitud: number;
+  longitud: number;
 }
 
 export interface Trip {
@@ -9,5 +9,5 @@ export interface Trip {
   startDate: Date | undefined;
   endDate: Date | undefined;
   description: string;
-  location: Location;
+  localizaciones: Location;
 }

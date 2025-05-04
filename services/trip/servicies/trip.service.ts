@@ -5,7 +5,7 @@ const getLocationIdFromDB = async (location: Location) => {
   const { data: existingLocation, error: locationError } = await supabase
     .from("localizaciones")
     .select("id")
-    .eq("nombre", location.name)
+    .eq("nombre", location.nombre)
     .single();
 
   let locationId;
@@ -15,9 +15,9 @@ const getLocationIdFromDB = async (location: Location) => {
       .from("localizaciones")
       .insert([
         {
-          nombre: location.name,
-          latitud: location.latitude,
-          longitud: location.longitude,
+          nombre: location.nombre,
+          latitud: location.latitud,
+          longitud: location.longitud,
         },
       ])
       .select()
@@ -37,7 +37,17 @@ const getLocationIdFromDB = async (location: Location) => {
 export const getUserTripsFromDB = async (userId: string) => {
   const { data, error } = await supabase
     .from("viajes")
-    .select("*")
+    .select(
+      `
+      *,
+      localizaciones (
+        id,
+        nombre,
+        latitud,
+        longitud
+      )
+    `
+    )
     .eq("usuario_id", userId);
 
   if (error) throw new Error(error.message);
@@ -47,7 +57,17 @@ export const getUserTripsFromDB = async (userId: string) => {
 export const getTripByIdFromDB = async (userId: string, tripId: string) => {
   const { data, error } = await supabase
     .from("viajes")
-    .select("*")
+    .select(
+      `
+      *,
+      localizaciones (
+        id,
+        nombre,
+        latitud,
+        longitud
+      )
+    `
+    )
     .eq("id", tripId)
     .eq("usuario_id", userId)
     .single();
@@ -81,12 +101,8 @@ export const deleteTripFromDB = async (userId: string, tripId: string) => {
   if (error) throw new Error(error.message);
 };
 
-export const createTripInDB = async (
-  userId: string,
-  tripId: string,
-  tripData: Trip
-) => {
-  const locationId = await getLocationIdFromDB(tripData.location);
+export const createTripInDB = async (userId: string, tripData: Trip) => {
+  const locationId = await getLocationIdFromDB(tripData.localizaciones);
 
   const { data: trip, error } = await supabase
     .from("viajes")

@@ -4,6 +4,7 @@ import {
   getTripByIdFromDB,
   updateTripFromDB,
   deleteTripFromDB,
+  createTripInDB,
 } from "../servicies/trip.service";
 
 export const getTrips = async (req: Request, res: Response): Promise<void> => {
@@ -74,6 +75,28 @@ export const deleteTrip = async (
   try {
     await deleteTripFromDB(userId, tripId);
     res.status(200).json({ message: "Trip deleted successfully" });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const createTrip = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  console.log("tripData");
+  const userId = req.headers["x-user-id"] as string;
+  const tripData = req.body;
+  console.log(tripData);
+
+  if (!tripData) {
+    res.status(400).json({ error: "trip information is missing" });
+    return;
+  }
+
+  try {
+    await createTripInDB(userId, tripData);
+    res.status(200).json({ message: "Trip created successfully" });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
