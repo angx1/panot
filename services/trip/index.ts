@@ -1,14 +1,13 @@
 import express from "express";
+import dotenv from "dotenv";
+import tripRoutes from "./routes/trip.routes";
 
+dotenv.config();
 const app = express();
-const PORT = 4002;
-
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({ message: "hoooollaaaa" });
-});
+app.use("/", tripRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Trip service corriendo en http://localhost:${PORT}`);
+app.listen(4002, () => {
+  console.log("Trip service running on port 4002");
 });
