@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getTripsFromDB } from "../servicies/trip.service";
+import { getUserTrips } from "../servicies/trip.service";
 
 export const getTrips = async (req: Request, res: Response): Promise<void> => {
   const userId = req.headers["x-user-id"];
@@ -11,7 +11,7 @@ export const getTrips = async (req: Request, res: Response): Promise<void> => {
   }
 
   try {
-    const trips = await getTripsFromDB(userId);
+    const trips = await getUserTrips(userId);
     res.status(200).json(trips);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
