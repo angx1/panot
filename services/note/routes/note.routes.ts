@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getNotes,
+  getUserNotes,
   getNoteById,
   getNoteByTripId,
   getNoteByContactId,
@@ -12,7 +12,7 @@ import {
 
 const router = Router();
 
-router.get("/", getNotes);
+router.get("/", getUserNotes);
 router.get("/:id", getNoteById);
 router.get("/trip/:tripId", getNoteByTripId);
 router.get("/contact/:contactId", getNoteByContactId);
