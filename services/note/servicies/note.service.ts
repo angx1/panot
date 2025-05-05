@@ -96,8 +96,8 @@ export const createNoteInDB = async (userId: string, noteData: Note) => {
     .from("notas")
     .insert([
       {
-        viaje_id: noteData.tripId ? noteData.tripId : null,
-        contacto_id: noteData.contactId ? noteData.contactId : null,
+        viaje_id: noteData.tripId ?? null,
+        contacto_id: noteData.contactId ?? null,
         contenido: noteData.content,
         usuario_id: userId,
       },

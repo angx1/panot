@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { Note } from "../types";
 import {
   getUserNotesFromDB,
   getNoteByIdFromDB,
@@ -10,7 +11,10 @@ import {
   createNoteInDB,
 } from "../servicies/note.service";
 
-export const getNotes = async (req: Request, res: Response): Promise<void> => {
+export const getUserNotes = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const userId = req.headers["x-user-id"];
 
   if (!userId || typeof userId !== "string") {
@@ -158,7 +162,7 @@ export const createNote = async (
   }
 
   try {
-    await createNoteInDB(userId, noteData);
+    await createNoteInDB(userId, noteData as Note);
     res.status(200).json({ message: "Note created successfully" });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
