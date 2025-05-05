@@ -9,7 +9,6 @@ import {
 
 export const getTrips = async (req: Request, res: Response): Promise<void> => {
   const userId = req.headers["x-user-id"];
-  console.log(req.headers);
 
   if (!userId || typeof userId !== "string") {
     res.status(400).json({ error: "x-user-id header missing" });
