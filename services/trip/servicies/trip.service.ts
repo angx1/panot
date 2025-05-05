@@ -24,7 +24,6 @@ const getLocationIdFromDB = async (location: Location) => {
       .single();
 
     if (createLocationError) {
-      console.error("Error creating location:", createLocationError);
       return { error: "Failed to create location" };
     }
 
