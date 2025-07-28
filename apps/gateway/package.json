@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src --exec ts-node src/server.ts",
-    "build": "tsup src/index.ts --format cjs,esm --dts --out-dir dist",
+    "build": "tsup src/index.ts --format cjs,esm --out-dir dist",
     "start": "node dist/index.js"
   },
   "keywords": [],
@@ -25,10 +25,10 @@
     "zod": "^4.0.10"
   },
   "devDependencies": {
-    "@types/express": "^5.0.3",
+    "@panot/types": "workspace:*",
+    "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.1.0",
-    "nodemon": "^3.1.10",
-    "@panot/types": "workspace:*"
+    "nodemon": "^3.1.10"
   }
 }

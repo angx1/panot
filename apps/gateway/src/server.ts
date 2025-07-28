@@ -1,5 +1,6 @@
 import "dotenv/config";
-import * as express from "express";
+const express = require("express");
+
 import pinoHttp from "pino-http";
 // import { requestId } from "./middlewares/requestId";
 // import { rateLimit } from "./middlewares/rateLimit";
