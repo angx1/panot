@@ -3,3 +3,6 @@
 # enviroment variables
 .env
 .env.*
+
+# apps 
+.ios

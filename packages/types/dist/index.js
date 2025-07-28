@@ -32,9 +32,14 @@ __export(index_exports, {
   CreateContactAction: () => CreateContactAction,
   DeleteContactAction: () => DeleteContactAction,
   ErrorShape: () => ErrorShape,
+  ExecuteRequest: () => ExecuteRequest,
+  ExecuteResponse: () => ExecuteResponse,
   IdempotencyKey: () => IdempotencyKey,
   ManualEnvelope: () => ManualEnvelope,
   NlpEnvelope: () => NlpEnvelope,
+  PlannerRequest: () => PlannerRequest,
+  PlannerResponse: () => PlannerResponse,
+  ResultShape: () => ResultShape,
   Timestamp: () => Timestamp,
   UUID: () => UUID,
   UpdateContactAction: () => UpdateContactAction
@@ -48,91 +53,111 @@ var Timestamp = import_zod.z.iso.datetime();
 var IdempotencyKey = import_zod.z.string().min(10).max(100);
 var ChannelKind = import_zod.z.enum(["phone", "email", "url", "social"]);
 
+// src/common/http.ts
+var import_zod2 = require("zod");
+var ErrorShape = import_zod2.z.object({
+  error: import_zod2.z.object({
+    code: import_zod2.z.string(),
+    message: import_zod2.z.string(),
+    details: import_zod2.z.any().optional()
+  })
+});
+var ResultShape = import_zod2.z.object({
+  ok: import_zod2.z.boolean().default(true),
+  data: import_zod2.z.any().optional()
+});
+
 // src/common/envelope.ts
-var import_zod4 = require("zod");
+var import_zod5 = require("zod");
 
 // src/actions/action.ts
-var import_zod3 = require("zod");
+var import_zod4 = require("zod");
 
 // src/contacts/contact.ts
-var import_zod2 = require("zod");
-var Channel = import_zod2.z.object({
+var import_zod3 = require("zod");
+var Channel = import_zod3.z.object({
   id: UUID.optional(),
   kind: ChannelKind,
-  label: import_zod2.z.string().optional(),
-  value: import_zod2.z.string().min(1)
+  label: import_zod3.z.string().optional(),
+  value: import_zod3.z.string().min(1)
 });
-var ContactCard = import_zod2.z.object({
-  first_name: import_zod2.z.string().min(1),
-  last_name: import_zod2.z.string().optional(),
-  company: import_zod2.z.string().optional(),
-  job_title: import_zod2.z.string().optional(),
-  department: import_zod2.z.string().optional(),
-  address: import_zod2.z.string().optional(),
-  birthday: import_zod2.z.iso.date().optional(),
-  notes: import_zod2.z.string().optional()
+var ContactCard = import_zod3.z.object({
+  first_name: import_zod3.z.string().min(1),
+  last_name: import_zod3.z.string().optional(),
+  company: import_zod3.z.string().optional(),
+  job_title: import_zod3.z.string().optional(),
+  department: import_zod3.z.string().optional(),
+  address: import_zod3.z.string().optional(),
+  birthday: import_zod3.z.iso.date().optional(),
+  notes: import_zod3.z.string().optional()
 });
 var ContactCreate = ContactCard.extend({
-  channels: import_zod2.z.array(Channel.omit({ id: true })).optional(),
-  is_self: import_zod2.z.boolean().default(false)
+  channels: import_zod3.z.array(Channel.omit({ id: true })).optional(),
+  is_self: import_zod3.z.boolean().default(false)
 });
 var ContactUpdate = ContactCard.partial().extend({
   id: UUID,
-  channels: import_zod2.z.array(
+  channels: import_zod3.z.array(
     Channel.extend({
-      _op: import_zod2.z.enum(["add", "update", "delete"]).default("update")
+      _op: import_zod3.z.enum(["add", "update", "delete"]).default("update")
     })
   ).optional()
 });
 var Contact = ContactCard.extend({
   id: UUID,
   owner_id: UUID,
-  is_self: import_zod2.z.boolean(),
+  is_self: import_zod3.z.boolean(),
   created_at: Timestamp
 });
 
 // src/actions/action.ts
-var CreateContactAction = import_zod3.z.object({
-  type: import_zod3.z.literal("create_contact"),
+var CreateContactAction = import_zod4.z.object({
+  type: import_zod4.z.literal("create_contact"),
   payload: ContactCreate
 });
-var UpdateContactAction = import_zod3.z.object({
-  type: import_zod3.z.literal("update_contact"),
+var UpdateContactAction = import_zod4.z.object({
+  type: import_zod4.z.literal("update_contact"),
   payload: ContactUpdate
 });
-var DeleteContactAction = import_zod3.z.object({
-  type: import_zod3.z.literal("delete_contact"),
-  payload: import_zod3.z.object({ id: UUID })
+var DeleteContactAction = import_zod4.z.object({
+  type: import_zod4.z.literal("delete_contact"),
+  payload: import_zod4.z.object({ id: UUID })
 });
-var Action = import_zod3.z.union([
+var Action = import_zod4.z.union([
   CreateContactAction,
   UpdateContactAction,
   DeleteContactAction
   // add more here
 ]);
-var ActionList = import_zod3.z.array(Action).min(1);
+var ActionList = import_zod4.z.array(Action).min(1);
 
 // src/common/envelope.ts
-var ManualEnvelope = import_zod4.z.object({
-  mode: import_zod4.z.literal("manual"),
+var ManualEnvelope = import_zod5.z.object({
+  mode: import_zod5.z.literal("manual"),
   idempotency_key: IdempotencyKey.optional(),
   actions: ActionList
 });
-var NlpEnvelope = import_zod4.z.object({
-  mode: import_zod4.z.literal("nlp"),
+var NlpEnvelope = import_zod5.z.object({
+  mode: import_zod5.z.literal("nlp"),
   idempotency_key: IdempotencyKey.optional(),
-  transcript: import_zod4.z.string().min(5)
+  transcript: import_zod5.z.string()
 });
-var CommandEnvelope = import_zod4.z.union([ManualEnvelope, NlpEnvelope]);
+var CommandEnvelope = import_zod5.z.union([ManualEnvelope, NlpEnvelope]);
 
-// src/common/errors.ts
-var import_zod5 = require("zod");
-var ErrorShape = import_zod5.z.object({
-  error: import_zod5.z.object({
-    code: import_zod5.z.string(),
-    message: import_zod5.z.string(),
-    details: import_zod5.z.any().optional()
-  })
+// src/actions/executor.ts
+var import_zod6 = require("zod");
+var ExecuteRequest = ActionList;
+var ExecuteResponse = import_zod6.z.object({
+  results: import_zod6.z.array(import_zod6.z.any())
+});
+
+// src/actions/planner.ts
+var import_zod7 = require("zod");
+var PlannerRequest = import_zod7.z.object({
+  transcript: import_zod7.z.string().min(5)
+});
+var PlannerResponse = import_zod7.z.object({
+  actions: ActionList
 });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
@@ -148,9 +173,14 @@ var ErrorShape = import_zod5.z.object({
   CreateContactAction,
   DeleteContactAction,
   ErrorShape,
+  ExecuteRequest,
+  ExecuteResponse,
   IdempotencyKey,
   ManualEnvelope,
   NlpEnvelope,
+  PlannerRequest,
+  PlannerResponse,
+  ResultShape,
   Timestamp,
   UUID,
   UpdateContactAction

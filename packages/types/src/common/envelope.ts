@@ -11,7 +11,7 @@ export const ManualEnvelope = z.object({
 export const NlpEnvelope = z.object({
   mode: z.literal("nlp"),
   idempotency_key: IdempotencyKey.optional(),
-  transcript: z.string().min(5),
+  transcript: z.string(),
 });
 
 export const CommandEnvelope = z.union([ManualEnvelope, NlpEnvelope]);
