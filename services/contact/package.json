@@ -1,0 +1,37 @@
+{
+  "name": "@panot/contacts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "dev": "nodemon --watch src --exec ts-node src/server.ts",
+    "build": "tsup src/index.ts --format cjs,esm --dts --out-dir dist",
+    "start": "node dist/index.js",
+    "clean": "rimraf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.13.1",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.1.0",
+    "nodemon": "^3.1.10",
+    "rimraf": "^6.0.1",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@panot/types": "workspace:*",
+    "@supabase/supabase-js": "^2.53.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "pino": "^9.7.0",
+    "pino-http": "^10.5.0",
+    "uuid": "^11.1.0",
+    "zod": "^4.0.10"
+  }
+}
