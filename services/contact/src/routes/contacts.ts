@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { ContactCreate, ContactUpdate, Contact } from "@panot/types";
+import { ContactCreate, ContactUpdate, Contact, UUID } from "@panot/types";
 import { validateBody } from "../utils/validate";
 import { getSbClient } from "../lib/supabase";
 import { z } from "zod";
@@ -7,6 +7,11 @@ import { z } from "zod";
 export const contactsRouter = Router();
 type ContactCreateShape = z.infer<typeof ContactCreate>;
 type ContactUpdateShape = z.infer<typeof ContactUpdate>;
+
+const ContactIdsSchema = z.object({
+  ids: z.array(UUID).min(1),
+});
+type ContactIdsShape = z.infer<typeof ContactIdsSchema>;
 
 // CREATE
 contactsRouter.post(
@@ -31,7 +36,7 @@ contactsRouter.post(
   }
 );
 
-// LIST
+// LIST ALL
 contactsRouter.get("/", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -82,3 +87,31 @@ contactsRouter.delete("/:id", async (req, res, next) => {
     next(e);
   }
 });
+
+// GET CONTACTS BY IDS
+/*
+(Using POST because we need to send a potentially large array of IDs in the request body)
+{
+  "ids": ["uuid1", "uuid2", "uuid3"]
+}
+*/
+contactsRouter.post(
+  "/list",
+  validateBody(ContactIdsSchema),
+  async (req, res, next) => {
+    try {
+      const sb = getSbClient((req as any).userJwt);
+      const { ids } = (req as any).validated as ContactIdsShape;
+
+      const { data, error } = await sb
+        .from("contacts")
+        .select("*")
+        .in("id", ids);
+
+      if (error) throw error;
+      res.json({ ok: true, data });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
