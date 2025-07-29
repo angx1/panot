@@ -8,7 +8,12 @@ export const validateBody =
     const result = schema.safeParse(req.body);
     if (!result.success) {
       return next(
-        makeError("BAD_BODY", "Invalid payload", result.error.flatten(), 400)
+        makeError(
+          "BAD_BODY",
+          "Invalid payload",
+          z.treeifyError(result.error),
+          400
+        )
       );
     }
     (req as any).validated = result.data as z.infer<S>;
