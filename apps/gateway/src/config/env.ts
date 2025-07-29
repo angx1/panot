@@ -5,6 +5,7 @@ const EnvSchema = z.object({
   SUPABASE_JWT_SECRET: z.string().min(10),
   SVC_DB_URL: z.url(),
   SVC_IA_URL: z.url(),
+  SVC_AUTH_URL: z.url(),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),

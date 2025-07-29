@@ -31,12 +31,14 @@ __export(index_exports, {
   ContactUpdate: () => ContactUpdate,
   CreateContactAction: () => CreateContactAction,
   DeleteContactAction: () => DeleteContactAction,
+  EmailUpdate: () => EmailUpdate,
   ErrorShape: () => ErrorShape,
   ExecuteRequest: () => ExecuteRequest,
   ExecuteResponse: () => ExecuteResponse,
   IdempotencyKey: () => IdempotencyKey,
   ManualEnvelope: () => ManualEnvelope,
   NlpEnvelope: () => NlpEnvelope,
+  PasswordUpdate: () => PasswordUpdate,
   PlannerRequest: () => PlannerRequest,
   PlannerResponse: () => PlannerResponse,
   ResultShape: () => ResultShape,
@@ -159,6 +161,11 @@ var PlannerRequest = import_zod7.z.object({
 var PlannerResponse = import_zod7.z.object({
   actions: ActionList
 });
+
+// src/account/account.ts
+var import_zod8 = require("zod");
+var EmailUpdate = import_zod8.z.object({ new_email: import_zod8.z.email() });
+var PasswordUpdate = import_zod8.z.object({ new_password: import_zod8.z.string().min(8) });
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   Action,
@@ -172,12 +179,14 @@ var PlannerResponse = import_zod7.z.object({
   ContactUpdate,
   CreateContactAction,
   DeleteContactAction,
+  EmailUpdate,
   ErrorShape,
   ExecuteRequest,
   ExecuteResponse,
   IdempotencyKey,
   ManualEnvelope,
   NlpEnvelope,
+  PasswordUpdate,
   PlannerRequest,
   PlannerResponse,
   ResultShape,

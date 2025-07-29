@@ -15,6 +15,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
+    "@panot/types": "workspace:*",
     "@types/express": "^5.0.3",
     "@types/node": "^24.1.0",
     "nodemon": "^3.1.10",

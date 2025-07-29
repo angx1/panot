@@ -553,4 +553,13 @@ declare const Contact: z.ZodObject<{
 }, z.core.$strip>;
 type Contact = z.infer<typeof Contact>;
 
-export { Action, ActionList, Channel, ChannelKind, CommandEnvelope, Contact, ContactCard, ContactCreate, ContactUpdate, CreateContactAction, DeleteContactAction, ErrorShape, ExecuteRequest, ExecuteResponse, IdempotencyKey, ManualEnvelope, NlpEnvelope, PlannerRequest, PlannerResponse, ResultShape, Timestamp, UUID, UpdateContactAction };
+declare const EmailUpdate: z.ZodObject<{
+    new_email: z.ZodEmail;
+}, z.core.$strip>;
+type EmailUpdate = z.infer<typeof EmailUpdate>;
+declare const PasswordUpdate: z.ZodObject<{
+    new_password: z.ZodString;
+}, z.core.$strip>;
+type PasswordUpdate = z.infer<typeof PasswordUpdate>;
+
+export { Action, ActionList, Channel, ChannelKind, CommandEnvelope, Contact, ContactCard, ContactCreate, ContactUpdate, CreateContactAction, DeleteContactAction, EmailUpdate, ErrorShape, ExecuteRequest, ExecuteResponse, IdempotencyKey, ManualEnvelope, NlpEnvelope, PasswordUpdate, PlannerRequest, PlannerResponse, ResultShape, Timestamp, UUID, UpdateContactAction };
