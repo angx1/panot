@@ -7,3 +7,5 @@ export * from "./actions/executor";
 export * from "./actions/planner";
 
 export * from "./contacts/contact";
+
+export * from "./account/account";

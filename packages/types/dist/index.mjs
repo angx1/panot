@@ -111,6 +111,11 @@ var PlannerRequest = z7.object({
 var PlannerResponse = z7.object({
   actions: ActionList
 });
+
+// src/account/account.ts
+import { z as z8 } from "zod";
+var EmailUpdate = z8.object({ new_email: z8.email() });
+var PasswordUpdate = z8.object({ new_password: z8.string().min(8) });
 export {
   Action,
   ActionList,
@@ -123,12 +128,14 @@ export {
   ContactUpdate,
   CreateContactAction,
   DeleteContactAction,
+  EmailUpdate,
   ErrorShape,
   ExecuteRequest,
   ExecuteResponse,
   IdempotencyKey,
   ManualEnvelope,
   NlpEnvelope,
+  PasswordUpdate,
   PlannerRequest,
   PlannerResponse,
   ResultShape,

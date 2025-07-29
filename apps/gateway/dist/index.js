@@ -59,12 +59,14 @@ var require_dist = __commonJS({
       ContactUpdate: () => ContactUpdate,
       CreateContactAction: () => CreateContactAction,
       DeleteContactAction: () => DeleteContactAction,
+      EmailUpdate: () => EmailUpdate,
       ErrorShape: () => ErrorShape,
       ExecuteRequest: () => ExecuteRequest,
       ExecuteResponse: () => ExecuteResponse2,
       IdempotencyKey: () => IdempotencyKey,
       ManualEnvelope: () => ManualEnvelope2,
       NlpEnvelope: () => NlpEnvelope3,
+      PasswordUpdate: () => PasswordUpdate,
       PlannerRequest: () => PlannerRequest,
       PlannerResponse: () => PlannerResponse2,
       ResultShape: () => ResultShape,
@@ -73,11 +75,11 @@ var require_dist = __commonJS({
       UpdateContactAction: () => UpdateContactAction
     });
     module2.exports = __toCommonJS2(index_exports2);
-    var import_zod2 = require("zod");
-    var UUID = import_zod2.z.uuid();
-    var Timestamp = import_zod2.z.iso.datetime();
-    var IdempotencyKey = import_zod2.z.string().min(10).max(100);
-    var ChannelKind = import_zod2.z.enum(["phone", "email", "url", "social"]);
+    var import_zod3 = require("zod");
+    var UUID = import_zod3.z.uuid();
+    var Timestamp = import_zod3.z.iso.datetime();
+    var IdempotencyKey = import_zod3.z.string().min(10).max(100);
+    var ChannelKind = import_zod3.z.enum(["phone", "email", "url", "social"]);
     var import_zod22 = require("zod");
     var ErrorShape = import_zod22.z.object({
       error: import_zod22.z.object({
@@ -92,39 +94,39 @@ var require_dist = __commonJS({
     });
     var import_zod5 = require("zod");
     var import_zod4 = require("zod");
-    var import_zod3 = require("zod");
-    var Channel = import_zod3.z.object({
+    var import_zod32 = require("zod");
+    var Channel = import_zod32.z.object({
       id: UUID.optional(),
       kind: ChannelKind,
-      label: import_zod3.z.string().optional(),
-      value: import_zod3.z.string().min(1)
+      label: import_zod32.z.string().optional(),
+      value: import_zod32.z.string().min(1)
     });
-    var ContactCard = import_zod3.z.object({
-      first_name: import_zod3.z.string().min(1),
-      last_name: import_zod3.z.string().optional(),
-      company: import_zod3.z.string().optional(),
-      job_title: import_zod3.z.string().optional(),
-      department: import_zod3.z.string().optional(),
-      address: import_zod3.z.string().optional(),
-      birthday: import_zod3.z.iso.date().optional(),
-      notes: import_zod3.z.string().optional()
+    var ContactCard = import_zod32.z.object({
+      first_name: import_zod32.z.string().min(1),
+      last_name: import_zod32.z.string().optional(),
+      company: import_zod32.z.string().optional(),
+      job_title: import_zod32.z.string().optional(),
+      department: import_zod32.z.string().optional(),
+      address: import_zod32.z.string().optional(),
+      birthday: import_zod32.z.iso.date().optional(),
+      notes: import_zod32.z.string().optional()
     });
     var ContactCreate = ContactCard.extend({
-      channels: import_zod3.z.array(Channel.omit({ id: true })).optional(),
-      is_self: import_zod3.z.boolean().default(false)
+      channels: import_zod32.z.array(Channel.omit({ id: true })).optional(),
+      is_self: import_zod32.z.boolean().default(false)
     });
     var ContactUpdate = ContactCard.partial().extend({
       id: UUID,
-      channels: import_zod3.z.array(
+      channels: import_zod32.z.array(
         Channel.extend({
-          _op: import_zod3.z.enum(["add", "update", "delete"]).default("update")
+          _op: import_zod32.z.enum(["add", "update", "delete"]).default("update")
         })
       ).optional()
     });
     var Contact = ContactCard.extend({
       id: UUID,
       owner_id: UUID,
-      is_self: import_zod3.z.boolean(),
+      is_self: import_zod32.z.boolean(),
       created_at: Timestamp
     });
     var CreateContactAction = import_zod4.z.object({
@@ -169,6 +171,9 @@ var require_dist = __commonJS({
     var PlannerResponse2 = import_zod7.z.object({
       actions: ActionList2
     });
+    var import_zod8 = require("zod");
+    var EmailUpdate = import_zod8.z.object({ new_email: import_zod8.z.email() });
+    var PasswordUpdate = import_zod8.z.object({ new_password: import_zod8.z.string().min(8) });
   }
 });
 
@@ -196,6 +201,7 @@ var EnvSchema = import_zod.z.object({
   SUPABASE_JWT_SECRET: import_zod.z.string().min(10),
   SVC_DB_URL: import_zod.z.url(),
   SVC_IA_URL: import_zod.z.url(),
+  SVC_AUTH_URL: import_zod.z.url(),
   NODE_ENV: import_zod.z.enum(["development", "production", "test"]).default("development")
 });
 var env = EnvSchema.parse(process.env);
@@ -221,11 +227,17 @@ var import_express = require("express");
 var import_types2 = __toESM(require_dist());
 
 // src/middlewares/validate.ts
+var import_zod2 = require("zod");
 var validateBody = (schema) => (req, _res, next) => {
   const result = schema.safeParse(req.body);
   if (!result.success) {
     return next(
-      makeError("BAD_BODY", "Invalid payload", result.error.flatten(), 400)
+      makeError(
+        "BAD_BODY",
+        "Invalid payload",
+        import_zod2.z.treeifyError(result.error),
+        400
+      )
     );
   }
   req.validated = result.data;
@@ -321,12 +333,25 @@ function errorHandler(err, req, res, _next) {
 }
 
 // src/server.ts
+var import_http_proxy_middleware = require("http-proxy-middleware");
 var express = require("express");
 var app = express();
 app.use(express.json());
 app.use((0, import_pino_http.default)());
 app.get("/health", (_, res) => res.json({ ok: true }));
 app.use("/v1/commands", auth, commandsRouter);
+app.use(
+  "/v1/account",
+  auth,
+  (0, import_http_proxy_middleware.createProxyMiddleware)({
+    target: env.SVC_AUTH_URL,
+    changeOrigin: true,
+    pathRewrite: { "^/v1/account": "/v1/account" },
+    onProxyReq(proxyReq, req) {
+      proxyReq.setHeader("x-request-id", req.id);
+    }
+  })
+);
 app.use(errorHandler);
 var port = process.env.PORT ?? 3e3;
 app.listen(port, () => console.log(`Gateway on :${port}`));
