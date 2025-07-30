@@ -5,7 +5,7 @@ import { EmailUpdate, PasswordUpdate } from "@panot/types";
 import { validateBody } from "../utils/validate";
 import { makeError } from "../utils/makeError";
 
-const admin = createClient(env.SUPABASE_URL, env.SERVICE_ROLE_KEY);
+const admin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
 export const accountRouter = Router();
 
 // DELETE /v1/account/termiante
