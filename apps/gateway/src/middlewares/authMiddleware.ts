@@ -4,7 +4,11 @@ import { Request, Response, NextFunction } from "express";
 import { makeError } from "../utils/makeError";
 import { env } from "../config/env";
 
-export function auth(req: Request, _res: Response, next: NextFunction) {
+export function authMiddleware(
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) {
   const h = req.headers.authorization;
   if (!h?.startsWith("Bearer ")) {
     return next(makeError("NO_TOKEN", "Missing token", undefined, 401));

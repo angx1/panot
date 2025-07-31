@@ -5,8 +5,27 @@ import { EmailUpdate, PasswordUpdate } from "@panot/types";
 import { validateBody } from "../utils/validate";
 import { makeError } from "../utils/makeError";
 
-const admin = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+const supabase_admin = createClient(
+  env.SUPABASE_URL,
+  env.SUPABASE_SERVICE_ROLE_KEY
+);
 export const accountRouter = Router();
+
+// GET USER'S INFO
+accountRouter.get("/", async (req, res, next) => {
+  try {
+    const { sub: userId } = JSON.parse(
+      Buffer.from((req as any).userJwt.split(".")[1], "base64").toString()
+    );
+    const { data: user, error } = await supabase_admin.auth.admin.getUserById(
+      userId
+    );
+    if (error) throw error;
+    res.json(user);
+  } catch (e) {
+    next(makeError("GET_USER_FAIL", "Could not get user info", e, 500));
+  }
+});
 
 // DELETE /v1/account/termiante
 accountRouter.delete("/terminate", async (req, res, next) => {
@@ -14,7 +33,7 @@ accountRouter.delete("/terminate", async (req, res, next) => {
     const { sub: userId } = JSON.parse(
       Buffer.from((req as any).userJwt.split(".")[1], "base64").toString()
     );
-    const { error } = await admin.auth.admin.deleteUser(userId);
+    const { error } = await supabase_admin.auth.admin.deleteUser(userId);
     if (error) throw error;
     res.status(204).end();
   } catch (e) {
@@ -32,7 +51,7 @@ accountRouter.patch(
         Buffer.from((req as any).userJwt.split(".")[1], "base64").toString()
       );
       const { new_email } = (req as any).validated as EmailUpdate;
-      const { error } = await admin.auth.admin.updateUserById(userId, {
+      const { error } = await supabase_admin.auth.admin.updateUserById(userId, {
         email: new_email,
       });
       if (error) throw error;
@@ -53,7 +72,7 @@ accountRouter.patch(
         Buffer.from((req as any).userJwt.split(".")[1], "base64").toString()
       );
       const { new_password } = (req as any).validated as PasswordUpdate;
-      const { error } = await admin.auth.admin.updateUserById(userId, {
+      const { error } = await supabase_admin.auth.admin.updateUserById(userId, {
         password: new_password,
       });
       if (error) throw error;
@@ -70,7 +89,7 @@ accountRouter.post("/revoke-sessions", async (req, res, next) => {
     const { sub: userId } = JSON.parse(
       Buffer.from((req as any).userJwt.split(".")[1], "base64").toString()
     );
-    const { error } = await admin.auth.admin.signOut(userId);
+    const { error } = await supabase_admin.auth.admin.signOut(userId);
     if (error) throw error;
     res.json({ ok: true });
   } catch (e) {
