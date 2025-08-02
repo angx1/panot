@@ -15,7 +15,7 @@ app.use(pinoHttp());
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
-app.use("/v1/contacts", authForwarded, contactsRouter);
+app.use("/v1/commands/executer", authForwarded, contactsRouter);
 
 app.use(errorHandler);
 

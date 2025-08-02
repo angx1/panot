@@ -32,6 +32,29 @@ declare const ManualEnvelope: z.ZodObject<{
         type: z.ZodLiteral<"create_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodString;
+            last_name: z.ZodString;
+            company: z.ZodString;
+            job_title: z.ZodString;
+            department: z.ZodString;
+            address: z.ZodString;
+            birthday: z.ZodISODate;
+            notes: z.ZodString;
+            channels: z.ZodArray<z.ZodObject<{
+                kind: z.ZodEnum<{
+                    phone: "phone";
+                    email: "email";
+                    url: "url";
+                    social: "social";
+                }>;
+                label: z.ZodString;
+                value: z.ZodString;
+            }, z.core.$strip>>;
+            is_self: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<"update_contact">;
+        payload: z.ZodObject<{
+            first_name: z.ZodOptional<z.ZodString>;
             last_name: z.ZodOptional<z.ZodString>;
             company: z.ZodOptional<z.ZodString>;
             job_title: z.ZodOptional<z.ZodString>;
@@ -39,46 +62,23 @@ declare const ManualEnvelope: z.ZodObject<{
             address: z.ZodOptional<z.ZodString>;
             birthday: z.ZodOptional<z.ZodISODate>;
             notes: z.ZodOptional<z.ZodString>;
-            channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                kind: z.ZodEnum<{
-                    phone: "phone";
-                    email: "email";
-                    url: "url";
-                    social: "social";
-                }>;
-                label: z.ZodOptional<z.ZodString>;
-                value: z.ZodString;
-            }, z.core.$strip>>>;
-            is_self: z.ZodDefault<z.ZodBoolean>;
-        }, z.core.$strip>;
-    }, z.core.$strip>, z.ZodObject<{
-        type: z.ZodLiteral<"update_contact">;
-        payload: z.ZodObject<{
-            first_name: z.ZodOptional<z.ZodString>;
-            last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-            notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
             id: z.ZodUUID;
-            channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                id: z.ZodOptional<z.ZodUUID>;
+            channels: z.ZodArray<z.ZodObject<{
+                id: z.ZodUUID;
                 kind: z.ZodEnum<{
                     phone: "phone";
                     email: "email";
                     url: "url";
                     social: "social";
                 }>;
-                label: z.ZodOptional<z.ZodString>;
+                label: z.ZodString;
                 value: z.ZodString;
                 _op: z.ZodDefault<z.ZodEnum<{
                     add: "add";
                     update: "update";
                     delete: "delete";
                 }>>;
-            }, z.core.$strip>>>;
+            }, z.core.$strip>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"delete_contact">;
@@ -99,6 +99,29 @@ declare const CommandEnvelope: z.ZodUnion<readonly [z.ZodObject<{
         type: z.ZodLiteral<"create_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodString;
+            last_name: z.ZodString;
+            company: z.ZodString;
+            job_title: z.ZodString;
+            department: z.ZodString;
+            address: z.ZodString;
+            birthday: z.ZodISODate;
+            notes: z.ZodString;
+            channels: z.ZodArray<z.ZodObject<{
+                kind: z.ZodEnum<{
+                    phone: "phone";
+                    email: "email";
+                    url: "url";
+                    social: "social";
+                }>;
+                label: z.ZodString;
+                value: z.ZodString;
+            }, z.core.$strip>>;
+            is_self: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<"update_contact">;
+        payload: z.ZodObject<{
+            first_name: z.ZodOptional<z.ZodString>;
             last_name: z.ZodOptional<z.ZodString>;
             company: z.ZodOptional<z.ZodString>;
             job_title: z.ZodOptional<z.ZodString>;
@@ -106,46 +129,23 @@ declare const CommandEnvelope: z.ZodUnion<readonly [z.ZodObject<{
             address: z.ZodOptional<z.ZodString>;
             birthday: z.ZodOptional<z.ZodISODate>;
             notes: z.ZodOptional<z.ZodString>;
-            channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                kind: z.ZodEnum<{
-                    phone: "phone";
-                    email: "email";
-                    url: "url";
-                    social: "social";
-                }>;
-                label: z.ZodOptional<z.ZodString>;
-                value: z.ZodString;
-            }, z.core.$strip>>>;
-            is_self: z.ZodDefault<z.ZodBoolean>;
-        }, z.core.$strip>;
-    }, z.core.$strip>, z.ZodObject<{
-        type: z.ZodLiteral<"update_contact">;
-        payload: z.ZodObject<{
-            first_name: z.ZodOptional<z.ZodString>;
-            last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-            notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
             id: z.ZodUUID;
-            channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                id: z.ZodOptional<z.ZodUUID>;
+            channels: z.ZodArray<z.ZodObject<{
+                id: z.ZodUUID;
                 kind: z.ZodEnum<{
                     phone: "phone";
                     email: "email";
                     url: "url";
                     social: "social";
                 }>;
-                label: z.ZodOptional<z.ZodString>;
+                label: z.ZodString;
                 value: z.ZodString;
                 _op: z.ZodDefault<z.ZodEnum<{
                     add: "add";
                     update: "update";
                     delete: "delete";
                 }>>;
-            }, z.core.$strip>>>;
+            }, z.core.$strip>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"delete_contact">;
@@ -164,23 +164,23 @@ declare const CreateContactAction: z.ZodObject<{
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
-        last_name: z.ZodOptional<z.ZodString>;
-        company: z.ZodOptional<z.ZodString>;
-        job_title: z.ZodOptional<z.ZodString>;
-        department: z.ZodOptional<z.ZodString>;
-        address: z.ZodOptional<z.ZodString>;
-        birthday: z.ZodOptional<z.ZodISODate>;
-        notes: z.ZodOptional<z.ZodString>;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        last_name: z.ZodString;
+        company: z.ZodString;
+        job_title: z.ZodString;
+        department: z.ZodString;
+        address: z.ZodString;
+        birthday: z.ZodISODate;
+        notes: z.ZodString;
+        channels: z.ZodArray<z.ZodObject<{
             kind: z.ZodEnum<{
                 phone: "phone";
                 email: "email";
                 url: "url";
                 social: "social";
             }>;
-            label: z.ZodOptional<z.ZodString>;
+            label: z.ZodString;
             value: z.ZodString;
-        }, z.core.$strip>>>;
+        }, z.core.$strip>>;
         is_self: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>;
 }, z.core.$strip>;
@@ -188,30 +188,30 @@ declare const UpdateContactAction: z.ZodObject<{
     type: z.ZodLiteral<"update_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodOptional<z.ZodString>;
-        last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-        notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
+        last_name: z.ZodOptional<z.ZodString>;
+        company: z.ZodOptional<z.ZodString>;
+        job_title: z.ZodOptional<z.ZodString>;
+        department: z.ZodOptional<z.ZodString>;
+        address: z.ZodOptional<z.ZodString>;
+        birthday: z.ZodOptional<z.ZodISODate>;
+        notes: z.ZodOptional<z.ZodString>;
         id: z.ZodUUID;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            id: z.ZodOptional<z.ZodUUID>;
+        channels: z.ZodArray<z.ZodObject<{
+            id: z.ZodUUID;
             kind: z.ZodEnum<{
                 phone: "phone";
                 email: "email";
                 url: "url";
                 social: "social";
             }>;
-            label: z.ZodOptional<z.ZodString>;
+            label: z.ZodString;
             value: z.ZodString;
             _op: z.ZodDefault<z.ZodEnum<{
                 add: "add";
                 update: "update";
                 delete: "delete";
             }>>;
-        }, z.core.$strip>>>;
+        }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>;
 declare const DeleteContactAction: z.ZodObject<{
@@ -224,6 +224,29 @@ declare const Action: z.ZodUnion<readonly [z.ZodObject<{
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
+        last_name: z.ZodString;
+        company: z.ZodString;
+        job_title: z.ZodString;
+        department: z.ZodString;
+        address: z.ZodString;
+        birthday: z.ZodISODate;
+        notes: z.ZodString;
+        channels: z.ZodArray<z.ZodObject<{
+            kind: z.ZodEnum<{
+                phone: "phone";
+                email: "email";
+                url: "url";
+                social: "social";
+            }>;
+            label: z.ZodString;
+            value: z.ZodString;
+        }, z.core.$strip>>;
+        is_self: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>;
+}, z.core.$strip>, z.ZodObject<{
+    type: z.ZodLiteral<"update_contact">;
+    payload: z.ZodObject<{
+        first_name: z.ZodOptional<z.ZodString>;
         last_name: z.ZodOptional<z.ZodString>;
         company: z.ZodOptional<z.ZodString>;
         job_title: z.ZodOptional<z.ZodString>;
@@ -231,46 +254,23 @@ declare const Action: z.ZodUnion<readonly [z.ZodObject<{
         address: z.ZodOptional<z.ZodString>;
         birthday: z.ZodOptional<z.ZodISODate>;
         notes: z.ZodOptional<z.ZodString>;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            kind: z.ZodEnum<{
-                phone: "phone";
-                email: "email";
-                url: "url";
-                social: "social";
-            }>;
-            label: z.ZodOptional<z.ZodString>;
-            value: z.ZodString;
-        }, z.core.$strip>>>;
-        is_self: z.ZodDefault<z.ZodBoolean>;
-    }, z.core.$strip>;
-}, z.core.$strip>, z.ZodObject<{
-    type: z.ZodLiteral<"update_contact">;
-    payload: z.ZodObject<{
-        first_name: z.ZodOptional<z.ZodString>;
-        last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-        notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
         id: z.ZodUUID;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            id: z.ZodOptional<z.ZodUUID>;
+        channels: z.ZodArray<z.ZodObject<{
+            id: z.ZodUUID;
             kind: z.ZodEnum<{
                 phone: "phone";
                 email: "email";
                 url: "url";
                 social: "social";
             }>;
-            label: z.ZodOptional<z.ZodString>;
+            label: z.ZodString;
             value: z.ZodString;
             _op: z.ZodDefault<z.ZodEnum<{
                 add: "add";
                 update: "update";
                 delete: "delete";
             }>>;
-        }, z.core.$strip>>>;
+        }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"delete_contact">;
@@ -283,6 +283,29 @@ declare const ActionList: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
+        last_name: z.ZodString;
+        company: z.ZodString;
+        job_title: z.ZodString;
+        department: z.ZodString;
+        address: z.ZodString;
+        birthday: z.ZodISODate;
+        notes: z.ZodString;
+        channels: z.ZodArray<z.ZodObject<{
+            kind: z.ZodEnum<{
+                phone: "phone";
+                email: "email";
+                url: "url";
+                social: "social";
+            }>;
+            label: z.ZodString;
+            value: z.ZodString;
+        }, z.core.$strip>>;
+        is_self: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>;
+}, z.core.$strip>, z.ZodObject<{
+    type: z.ZodLiteral<"update_contact">;
+    payload: z.ZodObject<{
+        first_name: z.ZodOptional<z.ZodString>;
         last_name: z.ZodOptional<z.ZodString>;
         company: z.ZodOptional<z.ZodString>;
         job_title: z.ZodOptional<z.ZodString>;
@@ -290,46 +313,23 @@ declare const ActionList: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         address: z.ZodOptional<z.ZodString>;
         birthday: z.ZodOptional<z.ZodISODate>;
         notes: z.ZodOptional<z.ZodString>;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            kind: z.ZodEnum<{
-                phone: "phone";
-                email: "email";
-                url: "url";
-                social: "social";
-            }>;
-            label: z.ZodOptional<z.ZodString>;
-            value: z.ZodString;
-        }, z.core.$strip>>>;
-        is_self: z.ZodDefault<z.ZodBoolean>;
-    }, z.core.$strip>;
-}, z.core.$strip>, z.ZodObject<{
-    type: z.ZodLiteral<"update_contact">;
-    payload: z.ZodObject<{
-        first_name: z.ZodOptional<z.ZodString>;
-        last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-        notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
         id: z.ZodUUID;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            id: z.ZodOptional<z.ZodUUID>;
+        channels: z.ZodArray<z.ZodObject<{
+            id: z.ZodUUID;
             kind: z.ZodEnum<{
                 phone: "phone";
                 email: "email";
                 url: "url";
                 social: "social";
             }>;
-            label: z.ZodOptional<z.ZodString>;
+            label: z.ZodString;
             value: z.ZodString;
             _op: z.ZodDefault<z.ZodEnum<{
                 add: "add";
                 update: "update";
                 delete: "delete";
             }>>;
-        }, z.core.$strip>>>;
+        }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"delete_contact">;
@@ -342,6 +342,29 @@ declare const ExecuteRequest: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
+        last_name: z.ZodString;
+        company: z.ZodString;
+        job_title: z.ZodString;
+        department: z.ZodString;
+        address: z.ZodString;
+        birthday: z.ZodISODate;
+        notes: z.ZodString;
+        channels: z.ZodArray<z.ZodObject<{
+            kind: z.ZodEnum<{
+                phone: "phone";
+                email: "email";
+                url: "url";
+                social: "social";
+            }>;
+            label: z.ZodString;
+            value: z.ZodString;
+        }, z.core.$strip>>;
+        is_self: z.ZodDefault<z.ZodBoolean>;
+    }, z.core.$strip>;
+}, z.core.$strip>, z.ZodObject<{
+    type: z.ZodLiteral<"update_contact">;
+    payload: z.ZodObject<{
+        first_name: z.ZodOptional<z.ZodString>;
         last_name: z.ZodOptional<z.ZodString>;
         company: z.ZodOptional<z.ZodString>;
         job_title: z.ZodOptional<z.ZodString>;
@@ -349,46 +372,23 @@ declare const ExecuteRequest: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         address: z.ZodOptional<z.ZodString>;
         birthday: z.ZodOptional<z.ZodISODate>;
         notes: z.ZodOptional<z.ZodString>;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            kind: z.ZodEnum<{
-                phone: "phone";
-                email: "email";
-                url: "url";
-                social: "social";
-            }>;
-            label: z.ZodOptional<z.ZodString>;
-            value: z.ZodString;
-        }, z.core.$strip>>>;
-        is_self: z.ZodDefault<z.ZodBoolean>;
-    }, z.core.$strip>;
-}, z.core.$strip>, z.ZodObject<{
-    type: z.ZodLiteral<"update_contact">;
-    payload: z.ZodObject<{
-        first_name: z.ZodOptional<z.ZodString>;
-        last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-        birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-        notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
         id: z.ZodUUID;
-        channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-            id: z.ZodOptional<z.ZodUUID>;
+        channels: z.ZodArray<z.ZodObject<{
+            id: z.ZodUUID;
             kind: z.ZodEnum<{
                 phone: "phone";
                 email: "email";
                 url: "url";
                 social: "social";
             }>;
-            label: z.ZodOptional<z.ZodString>;
+            label: z.ZodString;
             value: z.ZodString;
             _op: z.ZodDefault<z.ZodEnum<{
                 add: "add";
                 update: "update";
                 delete: "delete";
             }>>;
-        }, z.core.$strip>>>;
+        }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
     type: z.ZodLiteral<"delete_contact">;
@@ -411,6 +411,29 @@ declare const PlannerResponse: z.ZodObject<{
         type: z.ZodLiteral<"create_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodString;
+            last_name: z.ZodString;
+            company: z.ZodString;
+            job_title: z.ZodString;
+            department: z.ZodString;
+            address: z.ZodString;
+            birthday: z.ZodISODate;
+            notes: z.ZodString;
+            channels: z.ZodArray<z.ZodObject<{
+                kind: z.ZodEnum<{
+                    phone: "phone";
+                    email: "email";
+                    url: "url";
+                    social: "social";
+                }>;
+                label: z.ZodString;
+                value: z.ZodString;
+            }, z.core.$strip>>;
+            is_self: z.ZodDefault<z.ZodBoolean>;
+        }, z.core.$strip>;
+    }, z.core.$strip>, z.ZodObject<{
+        type: z.ZodLiteral<"update_contact">;
+        payload: z.ZodObject<{
+            first_name: z.ZodOptional<z.ZodString>;
             last_name: z.ZodOptional<z.ZodString>;
             company: z.ZodOptional<z.ZodString>;
             job_title: z.ZodOptional<z.ZodString>;
@@ -418,46 +441,23 @@ declare const PlannerResponse: z.ZodObject<{
             address: z.ZodOptional<z.ZodString>;
             birthday: z.ZodOptional<z.ZodISODate>;
             notes: z.ZodOptional<z.ZodString>;
-            channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                kind: z.ZodEnum<{
-                    phone: "phone";
-                    email: "email";
-                    url: "url";
-                    social: "social";
-                }>;
-                label: z.ZodOptional<z.ZodString>;
-                value: z.ZodString;
-            }, z.core.$strip>>>;
-            is_self: z.ZodDefault<z.ZodBoolean>;
-        }, z.core.$strip>;
-    }, z.core.$strip>, z.ZodObject<{
-        type: z.ZodLiteral<"update_contact">;
-        payload: z.ZodObject<{
-            first_name: z.ZodOptional<z.ZodString>;
-            last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-            birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-            notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
             id: z.ZodUUID;
-            channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                id: z.ZodOptional<z.ZodUUID>;
+            channels: z.ZodArray<z.ZodObject<{
+                id: z.ZodUUID;
                 kind: z.ZodEnum<{
                     phone: "phone";
                     email: "email";
                     url: "url";
                     social: "social";
                 }>;
-                label: z.ZodOptional<z.ZodString>;
+                label: z.ZodString;
                 value: z.ZodString;
                 _op: z.ZodDefault<z.ZodEnum<{
                     add: "add";
                     update: "update";
                     delete: "delete";
                 }>>;
-            }, z.core.$strip>>>;
+            }, z.core.$strip>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
         type: z.ZodLiteral<"delete_contact">;
@@ -468,84 +468,84 @@ declare const PlannerResponse: z.ZodObject<{
 }, z.core.$strip>;
 type PlannerResponse = z.infer<typeof PlannerResponse>;
 
+declare const ContactCard: z.ZodObject<{
+    first_name: z.ZodString;
+    last_name: z.ZodString;
+    company: z.ZodString;
+    job_title: z.ZodString;
+    department: z.ZodString;
+    address: z.ZodString;
+    birthday: z.ZodISODate;
+    notes: z.ZodString;
+}, z.core.$strip>;
 declare const Channel: z.ZodObject<{
-    id: z.ZodOptional<z.ZodUUID>;
+    id: z.ZodUUID;
     kind: z.ZodEnum<{
         phone: "phone";
         email: "email";
         url: "url";
         social: "social";
     }>;
-    label: z.ZodOptional<z.ZodString>;
+    label: z.ZodString;
     value: z.ZodString;
-}, z.core.$strip>;
-declare const ContactCard: z.ZodObject<{
-    first_name: z.ZodString;
-    last_name: z.ZodOptional<z.ZodString>;
-    company: z.ZodOptional<z.ZodString>;
-    job_title: z.ZodOptional<z.ZodString>;
-    department: z.ZodOptional<z.ZodString>;
-    address: z.ZodOptional<z.ZodString>;
-    birthday: z.ZodOptional<z.ZodISODate>;
-    notes: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 declare const ContactCreate: z.ZodObject<{
     first_name: z.ZodString;
-    last_name: z.ZodOptional<z.ZodString>;
-    company: z.ZodOptional<z.ZodString>;
-    job_title: z.ZodOptional<z.ZodString>;
-    department: z.ZodOptional<z.ZodString>;
-    address: z.ZodOptional<z.ZodString>;
-    birthday: z.ZodOptional<z.ZodISODate>;
-    notes: z.ZodOptional<z.ZodString>;
-    channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
+    last_name: z.ZodString;
+    company: z.ZodString;
+    job_title: z.ZodString;
+    department: z.ZodString;
+    address: z.ZodString;
+    birthday: z.ZodISODate;
+    notes: z.ZodString;
+    channels: z.ZodArray<z.ZodObject<{
         kind: z.ZodEnum<{
             phone: "phone";
             email: "email";
             url: "url";
             social: "social";
         }>;
-        label: z.ZodOptional<z.ZodString>;
+        label: z.ZodString;
         value: z.ZodString;
-    }, z.core.$strip>>>;
+    }, z.core.$strip>>;
     is_self: z.ZodDefault<z.ZodBoolean>;
 }, z.core.$strip>;
 declare const ContactUpdate: z.ZodObject<{
     first_name: z.ZodOptional<z.ZodString>;
-    last_name: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-    company: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-    job_title: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-    department: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-    address: z.ZodOptional<z.ZodOptional<z.ZodString>>;
-    birthday: z.ZodOptional<z.ZodOptional<z.ZodISODate>>;
-    notes: z.ZodOptional<z.ZodOptional<z.ZodString>>;
+    last_name: z.ZodOptional<z.ZodString>;
+    company: z.ZodOptional<z.ZodString>;
+    job_title: z.ZodOptional<z.ZodString>;
+    department: z.ZodOptional<z.ZodString>;
+    address: z.ZodOptional<z.ZodString>;
+    birthday: z.ZodOptional<z.ZodISODate>;
+    notes: z.ZodOptional<z.ZodString>;
     id: z.ZodUUID;
-    channels: z.ZodOptional<z.ZodArray<z.ZodObject<{
-        id: z.ZodOptional<z.ZodUUID>;
+    channels: z.ZodArray<z.ZodObject<{
+        id: z.ZodUUID;
         kind: z.ZodEnum<{
             phone: "phone";
             email: "email";
             url: "url";
             social: "social";
         }>;
-        label: z.ZodOptional<z.ZodString>;
+        label: z.ZodString;
         value: z.ZodString;
         _op: z.ZodDefault<z.ZodEnum<{
             add: "add";
             update: "update";
             delete: "delete";
         }>>;
-    }, z.core.$strip>>>;
+    }, z.core.$strip>>;
 }, z.core.$strip>;
 declare const Contact: z.ZodObject<{
     first_name: z.ZodString;
-    last_name: z.ZodOptional<z.ZodString>;
-    company: z.ZodOptional<z.ZodString>;
-    job_title: z.ZodOptional<z.ZodString>;
-    department: z.ZodOptional<z.ZodString>;
-    address: z.ZodOptional<z.ZodString>;
-    birthday: z.ZodOptional<z.ZodISODate>;
-    notes: z.ZodOptional<z.ZodString>;
+    last_name: z.ZodString;
+    company: z.ZodString;
+    job_title: z.ZodString;
+    department: z.ZodString;
+    address: z.ZodString;
+    birthday: z.ZodISODate;
+    notes: z.ZodString;
     id: z.ZodUUID;
     owner_id: z.ZodUUID;
     is_self: z.ZodBoolean;
