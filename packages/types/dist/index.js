@@ -77,24 +77,24 @@ var import_zod4 = require("zod");
 
 // src/contacts/contact.ts
 var import_zod3 = require("zod");
-var Channel = import_zod3.z.object({
-  id: UUID.optional(),
-  kind: ChannelKind,
-  label: import_zod3.z.string().optional(),
-  value: import_zod3.z.string().min(1)
-});
 var ContactCard = import_zod3.z.object({
-  first_name: import_zod3.z.string().min(1),
-  last_name: import_zod3.z.string().optional(),
-  company: import_zod3.z.string().optional(),
-  job_title: import_zod3.z.string().optional(),
-  department: import_zod3.z.string().optional(),
-  address: import_zod3.z.string().optional(),
-  birthday: import_zod3.z.iso.date().optional(),
-  notes: import_zod3.z.string().optional()
+  first_name: import_zod3.z.string().min(1).describe("Primer nombre del contacto"),
+  last_name: import_zod3.z.string().describe("Apellido del contacto"),
+  company: import_zod3.z.string().describe("Empresa del contacto"),
+  job_title: import_zod3.z.string().describe("Cargo o puesto del contacto"),
+  department: import_zod3.z.string().describe("Departamento del contacto"),
+  address: import_zod3.z.string().describe("Direcci\xF3n del contacto"),
+  birthday: import_zod3.z.iso.date().describe("Fecha de nacimiento en formato ISO"),
+  notes: import_zod3.z.string().describe("Notas adicionales sobre el contacto")
+});
+var Channel = import_zod3.z.object({
+  id: UUID.describe("Identificador \xFAnico del canal"),
+  kind: ChannelKind.describe("Tipo de canal (email, tel\xE9fono, etc.)"),
+  label: import_zod3.z.string().describe("Etiqueta del canal"),
+  value: import_zod3.z.string().min(1).describe("Valor del canal (ej: direcci\xF3n de email, n\xFAmero de tel\xE9fono)")
 });
 var ContactCreate = ContactCard.extend({
-  channels: import_zod3.z.array(Channel.omit({ id: true })).optional(),
+  channels: import_zod3.z.array(Channel.omit({ id: true })),
   is_self: import_zod3.z.boolean().default(false)
 });
 var ContactUpdate = ContactCard.partial().extend({
@@ -103,7 +103,7 @@ var ContactUpdate = ContactCard.partial().extend({
     Channel.extend({
       _op: import_zod3.z.enum(["add", "update", "delete"]).default("update")
     })
-  ).optional()
+  )
 });
 var Contact = ContactCard.extend({
   id: UUID,
@@ -114,22 +114,23 @@ var Contact = ContactCard.extend({
 
 // src/actions/action.ts
 var CreateContactAction = import_zod4.z.object({
-  type: import_zod4.z.literal("create_contact"),
-  payload: ContactCreate
+  type: import_zod4.z.literal("create_contact").describe("Tipo de acci\xF3n: crear contacto"),
+  payload: ContactCreate.describe("Datos para crear un nuevo contacto")
 });
 var UpdateContactAction = import_zod4.z.object({
-  type: import_zod4.z.literal("update_contact"),
-  payload: ContactUpdate
+  type: import_zod4.z.literal("update_contact").describe("Tipo de acci\xF3n: actualizar contacto"),
+  payload: ContactUpdate.describe(
+    "Datos para actualizar un contacto existente"
+  )
 });
 var DeleteContactAction = import_zod4.z.object({
-  type: import_zod4.z.literal("delete_contact"),
-  payload: import_zod4.z.object({ id: UUID })
+  type: import_zod4.z.literal("delete_contact").describe("Tipo de acci\xF3n: eliminar contacto"),
+  payload: import_zod4.z.object({ id: UUID.describe("ID del contacto a eliminar") })
 });
 var Action = import_zod4.z.union([
   CreateContactAction,
   UpdateContactAction,
   DeleteContactAction
-  // add more here
 ]);
 var ActionList = import_zod4.z.array(Action).min(1);
 
@@ -159,7 +160,9 @@ var PlannerRequest = import_zod7.z.object({
   transcript: import_zod7.z.string().min(5)
 });
 var PlannerResponse = import_zod7.z.object({
-  actions: ActionList
+  actions: ActionList.describe(
+    "Lista de acciones a realizar basadas en la transcripci\xF3n"
+  )
 });
 
 // src/account/account.ts

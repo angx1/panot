@@ -7,6 +7,8 @@ export const PlannerRequest = z.object({
 export type PlannerRequest = z.infer<typeof PlannerRequest>;
 
 export const PlannerResponse = z.object({
-  actions: ActionList,
+  actions: ActionList.describe(
+    "Lista de acciones a realizar basadas en la transcripción"
+  ),
 });
 export type PlannerResponse = z.infer<typeof PlannerResponse>;

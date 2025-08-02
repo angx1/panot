@@ -35,19 +35,22 @@ contactsRouter.post(
     }
   }
 );
-
 // LIST ALL
 contactsRouter.get("/", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
-    const { data, error } = await sb.from("contacts").select("*");
+    const { data, error } = await sb.from("contacts").select(`
+        *,
+        channels (
+          *
+        )
+      `);
     if (error) throw error;
     res.json({ ok: true, data });
   } catch (e) {
     next(e);
   }
 });
-
 // UPDATE
 contactsRouter.patch(
   "/:id",

@@ -27,24 +27,24 @@ import { z as z4 } from "zod";
 
 // src/contacts/contact.ts
 import { z as z3 } from "zod";
-var Channel = z3.object({
-  id: UUID.optional(),
-  kind: ChannelKind,
-  label: z3.string().optional(),
-  value: z3.string().min(1)
-});
 var ContactCard = z3.object({
-  first_name: z3.string().min(1),
-  last_name: z3.string().optional(),
-  company: z3.string().optional(),
-  job_title: z3.string().optional(),
-  department: z3.string().optional(),
-  address: z3.string().optional(),
-  birthday: z3.iso.date().optional(),
-  notes: z3.string().optional()
+  first_name: z3.string().min(1).describe("Primer nombre del contacto"),
+  last_name: z3.string().describe("Apellido del contacto"),
+  company: z3.string().describe("Empresa del contacto"),
+  job_title: z3.string().describe("Cargo o puesto del contacto"),
+  department: z3.string().describe("Departamento del contacto"),
+  address: z3.string().describe("Direcci\xF3n del contacto"),
+  birthday: z3.iso.date().describe("Fecha de nacimiento en formato ISO"),
+  notes: z3.string().describe("Notas adicionales sobre el contacto")
+});
+var Channel = z3.object({
+  id: UUID.describe("Identificador \xFAnico del canal"),
+  kind: ChannelKind.describe("Tipo de canal (email, tel\xE9fono, etc.)"),
+  label: z3.string().describe("Etiqueta del canal"),
+  value: z3.string().min(1).describe("Valor del canal (ej: direcci\xF3n de email, n\xFAmero de tel\xE9fono)")
 });
 var ContactCreate = ContactCard.extend({
-  channels: z3.array(Channel.omit({ id: true })).optional(),
+  channels: z3.array(Channel.omit({ id: true })),
   is_self: z3.boolean().default(false)
 });
 var ContactUpdate = ContactCard.partial().extend({
@@ -53,7 +53,7 @@ var ContactUpdate = ContactCard.partial().extend({
     Channel.extend({
       _op: z3.enum(["add", "update", "delete"]).default("update")
     })
-  ).optional()
+  )
 });
 var Contact = ContactCard.extend({
   id: UUID,
@@ -64,22 +64,23 @@ var Contact = ContactCard.extend({
 
 // src/actions/action.ts
 var CreateContactAction = z4.object({
-  type: z4.literal("create_contact"),
-  payload: ContactCreate
+  type: z4.literal("create_contact").describe("Tipo de acci\xF3n: crear contacto"),
+  payload: ContactCreate.describe("Datos para crear un nuevo contacto")
 });
 var UpdateContactAction = z4.object({
-  type: z4.literal("update_contact"),
-  payload: ContactUpdate
+  type: z4.literal("update_contact").describe("Tipo de acci\xF3n: actualizar contacto"),
+  payload: ContactUpdate.describe(
+    "Datos para actualizar un contacto existente"
+  )
 });
 var DeleteContactAction = z4.object({
-  type: z4.literal("delete_contact"),
-  payload: z4.object({ id: UUID })
+  type: z4.literal("delete_contact").describe("Tipo de acci\xF3n: eliminar contacto"),
+  payload: z4.object({ id: UUID.describe("ID del contacto a eliminar") })
 });
 var Action = z4.union([
   CreateContactAction,
   UpdateContactAction,
   DeleteContactAction
-  // add more here
 ]);
 var ActionList = z4.array(Action).min(1);
 
@@ -109,7 +110,9 @@ var PlannerRequest = z7.object({
   transcript: z7.string().min(5)
 });
 var PlannerResponse = z7.object({
-  actions: ActionList
+  actions: ActionList.describe(
+    "Lista de acciones a realizar basadas en la transcripci\xF3n"
+  )
 });
 
 // src/account/account.ts
