@@ -10,7 +10,12 @@ export async function planActions(transcript: string) {
   const phase1 = await model.invoke([
     {
       role: "system",
-      content: `Panot planner: Search contacts using find_contact tool. Extract relevant contact details from transcript and find potential matches in database. Focus on names, emails, and phone numbers mentioned.`,
+      content: `Panot planner: Search contacts using find_contact tool. Extract relevant contact details from 
+      transcript and find potential matches in database. Focus ONLY on unique identifying information: full names, 
+      email addresses, and phone numbers mentioned. Do NOT match contacts based on shared interests, hobbies, 
+      locations or other non-identifying characteristics. A match should only be considered if there is a high 
+      confidence match between the information. 
+      If there is any ambiguity or only partial matches, treat it as a new distinct contact.`,
     },
     {
       role: "user",
