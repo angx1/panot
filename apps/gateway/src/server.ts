@@ -15,10 +15,11 @@ interface ExpressRequest extends IncomingMessage {
 }
 
 const app = express();
-app.use(express.json());
 //app.use(requestId);
-app.use(pinoHttp());
 //app.use(rateLimit());
+
+app.use(express.json());
+app.use(pinoHttp());
 
 app.get("/health", (_, res) => res.json({ ok: true }));
 
