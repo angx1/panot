@@ -112,7 +112,8 @@ var PlannerRequest = z7.object({
 var PlannerResponse = z7.object({
   actions: ActionList.describe(
     "Lista de acciones a realizar basadas en la transcripci\xF3n"
-  )
+  ),
+  transcript: z7.string().min(5)
 });
 
 // src/account/account.ts
