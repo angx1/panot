@@ -5,7 +5,7 @@ import { getAuth } from "./requestContext";
 export const findContactTool = async () => {
   const auth = getAuth();
   try {
-    const response = await axios.get(env.GATEWAY_TO_DB_URL, {
+    const response = await axios.get(env.GATEWAY_TO_BUILDER_URL, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `${auth}`,

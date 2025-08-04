@@ -162,7 +162,8 @@ var PlannerRequest = import_zod7.z.object({
 var PlannerResponse = import_zod7.z.object({
   actions: ActionList.describe(
     "Lista de acciones a realizar basadas en la transcripci\xF3n"
-  )
+  ),
+  transcript: import_zod7.z.string().min(5)
 });
 
 // src/account/account.ts

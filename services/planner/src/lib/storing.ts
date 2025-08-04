@@ -37,7 +37,7 @@ export async function storePlan(plan: z.infer<typeof PlannerResponse>) {
       )
     );
 
-    return { success: true, job };
+    return { success: true };
   } catch (error) {
     console.error("Error storing plan:", error);
     return { success: false, error };

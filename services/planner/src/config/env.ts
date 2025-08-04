@@ -4,7 +4,7 @@ export const env = z
     PORT: z.string().default("3006"),
     MODEL_KEY: z.string().min(20),
     MODEL: z.string(),
-    GATEWAY_TO_DB_URL: z.url(),
+    GATEWAY_TO_BUILDER_URL: z.url(),
     SUPABASE_URL: z.url(),
     SUPABASE_ANON_KEY: z.string(),
   })

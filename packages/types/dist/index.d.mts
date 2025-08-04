@@ -465,6 +465,7 @@ declare const PlannerResponse: z.ZodObject<{
             id: z.ZodUUID;
         }, z.core.$strip>;
     }, z.core.$strip>]>>;
+    transcript: z.ZodString;
 }, z.core.$strip>;
 type PlannerResponse = z.infer<typeof PlannerResponse>;
 
