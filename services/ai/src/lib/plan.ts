@@ -1,7 +1,8 @@
-import { PlannerResponse } from "@panot/types"; // TODO
+import { PlannerResponse } from "@panot/types";
 import { model } from "./llm";
 import { schemaWithMetadata } from "../utils/plannerSchema";
 import { findContactTool } from "../utils/plannerHelpers";
+import { storePlan } from "./storing";
 
 const planner = model.withStructuredOutput(schemaWithMetadata);
 
@@ -41,6 +42,10 @@ export async function planActions(transcript: string) {
     },
     { role: "user", content: String(phase1.content ?? phase1) },
   ]);
+  const plan: PlannerResponse = {
+    actions: phase2.actions,
+    transcript,
+  };
 
-  return phase2;
+  return await storePlan(plan);
 }
