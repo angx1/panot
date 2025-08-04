@@ -5,5 +5,7 @@ export const env = z
     MODEL_KEY: z.string().min(20),
     MODEL: z.string(),
     GATEWAY_TO_DB_URL: z.url(),
+    SUPABASE_URL: z.url(),
+    SUPABASE_ANON_KEY: z.string(),
   })
   .parse(process.env);

@@ -14,6 +14,7 @@ planRouter.post(
     try {
       const { transcript } = (req as any).validated as PlannerRequest;
       const plan = await planActions(transcript);
+
       res.json(plan);
     } catch (err) {
       next(err);
