@@ -16,6 +16,10 @@ export const plannerResponseJsonSchema = {
             type: "object",
             description: "Datos para la acción",
             properties: {
+              id: {
+                type: "string",
+                description: "ID del contacto",
+              },
               // Para create_contact y update_contact
               first_name: {
                 type: "string",
@@ -49,11 +53,7 @@ export const plannerResponseJsonSchema = {
                 type: "string",
                 description: "Notas adicionales sobre el contacto",
               },
-              // Para update_contact y delete_contact
-              id: {
-                type: "string",
-                description: "ID del contacto",
-              },
+
               // Para create_contact y update_contact
               channels: {
                 type: "array",
@@ -75,18 +75,12 @@ export const plannerResponseJsonSchema = {
                       description:
                         "Valor del canal (ej: dirección de email, número de teléfono)",
                     },
-                    _op: {
-                      type: "string",
-                      enum: ["add", "update", "delete"],
-                      description:
-                        "Operación a realizar con el canal (solo para update_contact)",
-                    },
                   },
                   required: ["kind", "label", "value"],
                 },
               },
             },
-            required: ["first_name"],
+            required: ["id"],
           },
         },
         required: ["type", "payload"],

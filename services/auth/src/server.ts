@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(requestId);
 app.use(pinoHttp());
 
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", (_req, res) => res.json({ success: true }));
 
 app.use("/v1/account", authForwarded, accountRouter);
 app.use(errorHandler);

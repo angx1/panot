@@ -48,14 +48,14 @@ app.use(
   })
 );
 app.use(
-  "/v1/commands/executer",
+  "/v1/commands/builder",
   authMiddleware,
   createProxyMiddleware({
     target: env.SVC_BUILDER_URL,
     changeOrigin: true,
     pathRewrite: (path) => {
       if (path.includes("/health")) return "/health";
-      return "/v1/commands/executer" + path;
+      return "/v1/commands/builder" + path;
     },
     on: {
       proxyReq(proxyReq, req: ExpressRequest) {

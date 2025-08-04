@@ -4,7 +4,7 @@ import { validateBody } from "../utils/validate";
 import { getSbClient } from "../lib/supabase";
 import { z } from "zod";
 
-export const contactsRouter = Router();
+export const contactRouter = Router();
 type ContactCreateShape = z.infer<typeof ContactCreate>;
 type ContactUpdateShape = z.infer<typeof ContactUpdate>;
 
@@ -14,29 +14,38 @@ const ContactIdsSchema = z.object({
 type ContactIdsShape = z.infer<typeof ContactIdsSchema>;
 
 // CREATE
-contactsRouter.post(
-  "/",
-  validateBody(ContactCreate),
-  async (req, res, next) => {
-    try {
-      const sb = getSbClient((req as any).userJwt);
-      const payload = (req as any).validated as ContactCreateShape;
+contactRouter.post("/", validateBody(ContactCreate), async (req, res, next) => {
+  try {
+    const sb = getSbClient((req as any).userJwt);
+    const payload = (req as any).validated as ContactCreateShape;
+    const contactChannels = payload.channels ?? [];
+    delete payload.channels;
 
-      const { data, error } = await sb
-        .from("contacts")
-        .insert({ ...payload })
-        .select("*")
-        .single();
+    const { data, error } = await sb
+      .from("contacts")
+      .insert({ ...payload })
+      .select("*")
+      .single();
 
-      if (error) throw error;
-      res.json({ ok: true, data });
-    } catch (e) {
-      next(e);
+    if (error) throw error;
+    const contactId = data.id;
+    if (contactChannels.length > 0) {
+      payload.channels.map(async (channel) => {
+        const { data, error } = await sb
+          .from("channels")
+          .insert({ id: contactId, ...channel })
+          .select("*")
+          .single();
+        if (error) throw error;
+      });
     }
+    res.json({ success: true, data });
+  } catch (e) {
+    next(e);
   }
-);
+});
 // LIST ALL
-contactsRouter.get("/", async (req, res, next) => {
+contactRouter.get("/all", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
     const { data, error } = await sb.from("contacts").select(`
@@ -46,13 +55,13 @@ contactsRouter.get("/", async (req, res, next) => {
         )
       `);
     if (error) throw error;
-    res.json({ ok: true, data });
+    res.json({ success: true, data });
   } catch (e) {
     next(e);
   }
 });
 // UPDATE
-contactsRouter.patch(
+contactRouter.patch(
   "/:id",
   validateBody(ContactUpdate),
   async (req, res, next) => {
@@ -61,15 +70,31 @@ contactsRouter.patch(
       const payload = (req as any).validated as ContactUpdateShape;
       const id = req.params.id;
 
+      const contactChannels = payload.channels ?? [];
+      delete payload.channels;
+
       const { data, error } = await sb
         .from("contacts")
         .update(payload)
         .eq("id", id)
         .select("*")
         .single();
+      if (error) throw error;
+
+      if (contactChannels.length > 0) {
+        payload.channels.map(async (channel) => {
+          const { data, error } = await sb
+            .from("channels")
+            .insert({ id: id, ...channel })
+            .select("*")
+            .single();
+          if (error) throw error;
+          res.json({ success: false });
+        });
+      }
 
       if (error) throw error;
-      res.json({ ok: true, data });
+      res.json({ success: true, data });
     } catch (e) {
       next(e);
     }
@@ -77,7 +102,7 @@ contactsRouter.patch(
 );
 
 // DELETE
-contactsRouter.delete("/:id", async (req, res, next) => {
+contactRouter.delete("/:id", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
     const { error } = await sb
@@ -85,20 +110,20 @@ contactsRouter.delete("/:id", async (req, res, next) => {
       .delete()
       .eq("id", req.params.id);
     if (error) throw error;
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (e) {
     next(e);
   }
 });
 
 // GET CONTACTS BY IDS
-/*
-(Using POST because we need to send a potentially large array of IDs in the request body)
-{
-  "ids": ["uuid1", "uuid2", "uuid3"]
-}
-*/
-contactsRouter.post(
+contactRouter.post(
+  /*
+    (Using POST because we need to send a potentially large array of IDs in the request body)
+    {
+      "ids": ["uuid1", "uuid2", "uuid3"]
+    }
+  */
   "/list",
   validateBody(ContactIdsSchema),
   async (req, res, next) => {
@@ -112,7 +137,7 @@ contactsRouter.post(
         .in("id", ids);
 
       if (error) throw error;
-      res.json({ ok: true, data });
+      res.json({ success: true, data });
     } catch (e) {
       next(e);
     }
