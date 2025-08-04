@@ -27,7 +27,7 @@ app.use(
   "/v1/commands/planner",
   authMiddleware,
   createProxyMiddleware({
-    target: env.SVC_IA_URL,
+    target: env.SVC_PLANNER_URL,
     changeOrigin: true,
     pathRewrite: (path) => {
       if (path.includes("/health")) return "/health";
@@ -51,7 +51,7 @@ app.use(
   "/v1/commands/executer",
   authMiddleware,
   createProxyMiddleware({
-    target: env.SVC_DB_URL,
+    target: env.SVC_BUILDER_URL,
     changeOrigin: true,
     pathRewrite: (path) => {
       if (path.includes("/health")) return "/health";
