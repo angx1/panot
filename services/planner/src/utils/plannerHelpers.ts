@@ -1,14 +1,21 @@
 import axios from "axios";
 import { env } from "../config/env";
 import { getAuth } from "./requestContext";
+import { jwtDecode } from "jwt-decode";
 
 export const findContactTool = async () => {
-  const auth = getAuth();
+  const authHeader = getAuth();
+  const jwt = authHeader?.startsWith("Bearer ")
+    ? authHeader.slice(7)
+    : authHeader;
+
+  const { sub: userId } = jwtDecode(jwt!) as { sub: string };
+
   try {
     const response = await axios.get(env.GATEWAY_TO_BUILDER_URL, {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `${auth}`,
+        Authorization: `${authHeader}`,
       },
     });
 
