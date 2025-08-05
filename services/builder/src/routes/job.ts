@@ -1,20 +1,13 @@
 import { Router } from "express";
 import { getSbClient } from "../lib/supabase";
 import { z } from "zod";
-
-import { actionRouter } from "./actions";
+import { actionRouter, buildAction } from "./actions";
 
 const IdParam = z.object({ id: z.uuid() });
 
 export const jobRouter = Router();
 
 jobRouter.use("/:id/action", actionRouter);
-
-/* 
-    ---- JOBS
-  /job/:id/approve
-
-*/
 
 jobRouter.get("/all", async (req, res, next) => {
   try {
@@ -63,6 +56,28 @@ jobRouter.delete("/:id/deny", async (req, res, next) => {
       .eq("job_id", req.params.id);
     if (error) throw error;
     res.json({ success: true });
+  } catch (e) {
+    next(e);
+  }
+});
+
+jobRouter.post("/:id/approve", async (req, res, next) => {
+  try {
+    const sb = getSbClient((req as any).userJwt);
+    const parsed = IdParam.safeParse(req.params);
+    if (!parsed.success)
+      return res.status(400).json({ error: "Invalid job id" });
+
+    const { data: actionList, error } = await sb
+      .from("actions")
+      .select("*")
+      .eq("job_id", req.params.id);
+
+    if (error) throw error;
+
+    const actions = await Promise.all(
+      actionList.map((action) => buildAction(action, (req as any).userJwt))
+    );
   } catch (e) {
     next(e);
   }

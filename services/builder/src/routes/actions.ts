@@ -1,21 +1,34 @@
 import { Router } from "express";
-import { ContactCreate, ContactUpdate } from "@panot/types";
-
+import { ContactCreate, ContactUpdate, ActionList } from "@panot/types";
+import { getUser } from "../utils/user";
 import { getSbClient } from "../lib/supabase";
 import { Action } from "@panot/types";
 import { z } from "zod";
+import { UUID } from "crypto";
 
 type ContactCreateShape = z.infer<typeof ContactCreate>;
 type ContactUpdateShape = z.infer<typeof ContactUpdate>;
 
 export const actionRouter = Router();
-/*
-    ---- ACTIONS
-  /job/:id/action/:id/approve
 
-*/
+export async function buildAction(action: Action, auth) {
+  if (action.type === "create_contact") {
+    return buildApprovedActionCreate(action, auth);
+  }
+  if (action.type === "update_contact") {
+    return buildApprovedActionUpdate(action, auth);
+  }
+  if (action.type === "delete_contact") {
+    return buildApprovedActionDelete(action, auth);
+  } else {
+    return {
+      success: false,
+      error: `Invalid action type: ${(action as Action).type}`,
+    };
+  }
+}
 
-export async function buildApprovedActionCreate(action: Action, auth) {
+async function buildApprovedActionCreate(action: Action, auth) {
   if (action.type !== "create_contact")
     return {
       success: false,
@@ -27,9 +40,11 @@ export async function buildApprovedActionCreate(action: Action, auth) {
     const contactChannels = payload.channels ?? [];
     delete payload.channels;
 
+    const user = await getUser(auth);
+
     const { data, error } = await sb
       .from("contacts")
-      .insert({ ...payload })
+      .insert({ ...payload, owner_id: user.id })
       .select("*")
       .single();
 
@@ -55,7 +70,7 @@ export async function buildApprovedActionCreate(action: Action, auth) {
   }
 }
 
-export async function buildApprovedActionUpdate(action: Action, auth) {
+async function buildApprovedActionUpdate(action: Action, auth) {
   if (action.type !== "update_contact")
     return {
       success: false,
@@ -96,7 +111,7 @@ export async function buildApprovedActionUpdate(action: Action, auth) {
   }
 }
 
-export async function buildApprovedActionDelete(action: Action, auth) {
+async function buildApprovedActionDelete(action: Action, auth) {
   if (action.type !== "delete_contact")
     return {
       success: false,
@@ -113,6 +128,31 @@ export async function buildApprovedActionDelete(action: Action, auth) {
   } catch (e) {
     return { success: false, error: e.message || "Failed to delete contact" };
   }
+}
+
+async function deleteJobIfLast(actionJobId: string, auth) {
+  const sb = getSbClient(auth);
+  const { data: actionList, error } = await sb
+    .from("actions")
+    .select("*")
+    .eq("action_job_id", actionJobId);
+  if (error) throw new Error(`Failed to fetch actions: ${error.message}`);
+  if (actionList.length == 0) {
+    const { data, error } = await sb
+      .from("jobs")
+      .delete()
+      .eq("job_id", actionJobId);
+  }
+  if (error) throw new Error(`Failed to delete job: ${error.message}`);
+}
+
+async function deleteAction(actionId: string, auth) {
+  const sb = getSbClient(auth);
+  const { data, error } = await sb
+    .from("actions")
+    .delete()
+    .eq("action_id", actionId);
+  if (error) throw new Error(`Failed to delete action: ${error.message}`);
 }
 
 actionRouter.get("/all", async (req, res, next) => {
@@ -179,28 +219,11 @@ actionRouter.post("/:id/approve", async (req, res, next) => {
         error: `Action with ID ${req.params.id} not found`,
       });
     }
-
-    let result;
-    if (action.type === "create_contact") {
-      result = await buildApprovedActionCreate(action, auth);
-    } else if (action.type === "update_contact") {
-      result = await buildApprovedActionUpdate(action, auth);
-    } else if (action.type === "delete_contact") {
-      result = await buildApprovedActionDelete(action, auth);
-    } else {
-      return res
-        .status(400)
-        .json({ success: false, error: `Invalid action type: ${action.type}` });
-    }
+    const result = await buildAction(action, auth);
+    const actionJobId = action.action_job_id;
     if (result.success) {
-      const { error: deleteError } = await sb
-        .from("actions")
-        .delete()
-        .eq("action_id", req.params.id);
-      if (deleteError)
-        throw new Error(
-          `Failed to delete approved action: ${deleteError.message}`
-        );
+      await deleteAction(req.params.id, auth);
+      await deleteJobIfLast(actionJobId, auth);
     }
     res.json(result);
   } catch (e) {
