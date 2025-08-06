@@ -114,16 +114,19 @@ var Contact = ContactCard.extend({
 
 // src/actions/action.ts
 var CreateContactAction = import_zod4.z.object({
+  action_id: UUID.describe("ID de la acci\xF3n"),
   type: import_zod4.z.literal("create_contact").describe("Tipo de acci\xF3n: crear contacto"),
   payload: ContactCreate.describe("Datos para crear un nuevo contacto")
 });
 var UpdateContactAction = import_zod4.z.object({
+  action_id: UUID.describe("ID de la acci\xF3n"),
   type: import_zod4.z.literal("update_contact").describe("Tipo de acci\xF3n: actualizar contacto"),
   payload: ContactUpdate.describe(
     "Datos para actualizar un contacto existente"
   )
 });
 var DeleteContactAction = import_zod4.z.object({
+  action_id: UUID.describe("ID de la acci\xF3n"),
   type: import_zod4.z.literal("delete_contact").describe("Tipo de acci\xF3n: eliminar contacto"),
   payload: import_zod4.z.object({ id: UUID.describe("ID del contacto a eliminar") })
 });

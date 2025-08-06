@@ -3,11 +3,13 @@ import { UUID } from "../common/primitives";
 import { ContactCreate, ContactUpdate } from "../contacts/contact";
 
 export const CreateContactAction = z.object({
+  action_id: UUID.describe("ID de la acción"),
   type: z.literal("create_contact").describe("Tipo de acción: crear contacto"),
   payload: ContactCreate.describe("Datos para crear un nuevo contacto"),
 });
 
 export const UpdateContactAction = z.object({
+  action_id: UUID.describe("ID de la acción"),
   type: z
     .literal("update_contact")
     .describe("Tipo de acción: actualizar contacto"),
@@ -17,6 +19,7 @@ export const UpdateContactAction = z.object({
 });
 
 export const DeleteContactAction = z.object({
+  action_id: UUID.describe("ID de la acción"),
   type: z
     .literal("delete_contact")
     .describe("Tipo de acción: eliminar contacto"),

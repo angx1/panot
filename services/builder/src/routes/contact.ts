@@ -11,9 +11,9 @@ type ContactUpdateShape = z.infer<typeof ContactUpdate>;
 const ContactIdsSchema = z.object({
   ids: z.array(UUID).min(1),
 });
+
 type ContactIdsShape = z.infer<typeof ContactIdsSchema>;
 
-// CREATE
 contactRouter.post("/", validateBody(ContactCreate), async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -44,7 +44,7 @@ contactRouter.post("/", validateBody(ContactCreate), async (req, res, next) => {
     next(e);
   }
 });
-// LIST ALL
+
 contactRouter.get("/all", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -60,7 +60,7 @@ contactRouter.get("/all", async (req, res, next) => {
     next(e);
   }
 });
-// UPDATE
+
 contactRouter.patch(
   "/:id",
   validateBody(ContactUpdate),
@@ -101,7 +101,6 @@ contactRouter.patch(
   }
 );
 
-// DELETE
 contactRouter.delete("/:id", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -116,7 +115,6 @@ contactRouter.delete("/:id", async (req, res, next) => {
   }
 });
 
-// GET CONTACTS BY IDS
 contactRouter.post(
   /*
     (Using POST because we need to send a potentially large array of IDs in the request body)
