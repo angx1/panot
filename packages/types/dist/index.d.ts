@@ -29,6 +29,7 @@ declare const ManualEnvelope: z.ZodObject<{
     mode: z.ZodLiteral<"manual">;
     idempotency_key: z.ZodOptional<z.ZodString>;
     actions: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"create_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodString;
@@ -52,6 +53,7 @@ declare const ManualEnvelope: z.ZodObject<{
             is_self: z.ZodDefault<z.ZodBoolean>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"update_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodOptional<z.ZodString>;
@@ -81,6 +83,7 @@ declare const ManualEnvelope: z.ZodObject<{
             }, z.core.$strip>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"delete_contact">;
         payload: z.ZodObject<{
             id: z.ZodUUID;
@@ -96,6 +99,7 @@ declare const CommandEnvelope: z.ZodUnion<readonly [z.ZodObject<{
     mode: z.ZodLiteral<"manual">;
     idempotency_key: z.ZodOptional<z.ZodString>;
     actions: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"create_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodString;
@@ -119,6 +123,7 @@ declare const CommandEnvelope: z.ZodUnion<readonly [z.ZodObject<{
             is_self: z.ZodDefault<z.ZodBoolean>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"update_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodOptional<z.ZodString>;
@@ -148,6 +153,7 @@ declare const CommandEnvelope: z.ZodUnion<readonly [z.ZodObject<{
             }, z.core.$strip>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"delete_contact">;
         payload: z.ZodObject<{
             id: z.ZodUUID;
@@ -161,6 +167,7 @@ declare const CommandEnvelope: z.ZodUnion<readonly [z.ZodObject<{
 type CommandEnvelope = z.infer<typeof CommandEnvelope>;
 
 declare const CreateContactAction: z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
@@ -185,6 +192,7 @@ declare const CreateContactAction: z.ZodObject<{
     }, z.core.$strip>;
 }, z.core.$strip>;
 declare const UpdateContactAction: z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"update_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodOptional<z.ZodString>;
@@ -215,12 +223,14 @@ declare const UpdateContactAction: z.ZodObject<{
     }, z.core.$strip>;
 }, z.core.$strip>;
 declare const DeleteContactAction: z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"delete_contact">;
     payload: z.ZodObject<{
         id: z.ZodUUID;
     }, z.core.$strip>;
 }, z.core.$strip>;
 declare const Action: z.ZodUnion<readonly [z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
@@ -244,6 +254,7 @@ declare const Action: z.ZodUnion<readonly [z.ZodObject<{
         is_self: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"update_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodOptional<z.ZodString>;
@@ -273,6 +284,7 @@ declare const Action: z.ZodUnion<readonly [z.ZodObject<{
         }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"delete_contact">;
     payload: z.ZodObject<{
         id: z.ZodUUID;
@@ -280,6 +292,7 @@ declare const Action: z.ZodUnion<readonly [z.ZodObject<{
 }, z.core.$strip>]>;
 type Action = z.infer<typeof Action>;
 declare const ActionList: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
@@ -303,6 +316,7 @@ declare const ActionList: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         is_self: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"update_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodOptional<z.ZodString>;
@@ -332,6 +346,7 @@ declare const ActionList: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"delete_contact">;
     payload: z.ZodObject<{
         id: z.ZodUUID;
@@ -339,6 +354,7 @@ declare const ActionList: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
 }, z.core.$strip>]>>;
 
 declare const ExecuteRequest: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"create_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodString;
@@ -362,6 +378,7 @@ declare const ExecuteRequest: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         is_self: z.ZodDefault<z.ZodBoolean>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"update_contact">;
     payload: z.ZodObject<{
         first_name: z.ZodOptional<z.ZodString>;
@@ -391,6 +408,7 @@ declare const ExecuteRequest: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
         }, z.core.$strip>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
+    action_id: z.ZodUUID;
     type: z.ZodLiteral<"delete_contact">;
     payload: z.ZodObject<{
         id: z.ZodUUID;
@@ -408,6 +426,7 @@ declare const PlannerRequest: z.ZodObject<{
 type PlannerRequest = z.infer<typeof PlannerRequest>;
 declare const PlannerResponse: z.ZodObject<{
     actions: z.ZodArray<z.ZodUnion<readonly [z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"create_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodString;
@@ -431,6 +450,7 @@ declare const PlannerResponse: z.ZodObject<{
             is_self: z.ZodDefault<z.ZodBoolean>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"update_contact">;
         payload: z.ZodObject<{
             first_name: z.ZodOptional<z.ZodString>;
@@ -460,6 +480,7 @@ declare const PlannerResponse: z.ZodObject<{
             }, z.core.$strip>>;
         }, z.core.$strip>;
     }, z.core.$strip>, z.ZodObject<{
+        action_id: z.ZodUUID;
         type: z.ZodLiteral<"delete_contact">;
         payload: z.ZodObject<{
             id: z.ZodUUID;

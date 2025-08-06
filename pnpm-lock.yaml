@@ -92,73 +92,6 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  services/ai:
-    dependencies:
-      '@langchain/core':
-        specifier: ^0.3.66
-        version: 0.3.66(openai@5.11.0(ws@8.18.3)(zod@4.0.10))
-      '@langchain/openai':
-        specifier: ^0.6.3
-        version: 0.6.3(@langchain/core@0.3.66(openai@5.11.0(ws@8.18.3)(zod@4.0.10)))(ws@8.18.3)
-      '@panot/types':
-        specifier: workspace:*
-        version: link:../../packages/types
-      '@supabase/supabase-js':
-        specifier: ^2.53.0
-        version: 2.53.0
-      axios:
-        specifier: ^1.11.0
-        version: 1.11.0
-      dotenv:
-        specifier: ^17.2.1
-        version: 17.2.1
-      express:
-        specifier: ^5.1.0
-        version: 5.1.0
-      jwt-decode:
-        specifier: ^4.0.0
-        version: 4.0.0
-      langchain:
-        specifier: ^0.3.30
-        version: 0.3.30(@langchain/core@0.3.66(openai@5.11.0(ws@8.18.3)(zod@4.0.10)))(axios@1.11.0)(openai@5.11.0(ws@8.18.3)(zod@4.0.10))(ws@8.18.3)
-      openai:
-        specifier: ^5.11.0
-        version: 5.11.0(ws@8.18.3)(zod@4.0.10)
-      pino:
-        specifier: ^9.7.0
-        version: 9.7.0
-      pino-http:
-        specifier: ^10.5.0
-        version: 10.5.0
-      uuid:
-        specifier: ^11.1.0
-        version: 11.1.0
-      zod:
-        specifier: ^4.0.10
-        version: 4.0.10
-    devDependencies:
-      '@types/express':
-        specifier: ^5.0.3
-        version: 5.0.3
-      '@types/node':
-        specifier: ^24.1.0
-        version: 24.1.0
-      nodemon:
-        specifier: ^3.1.10
-        version: 3.1.10
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
-      ts-node:
-        specifier: ^10.9.2
-        version: 10.9.2(@types/node@24.1.0)(typescript@5.8.3)
-      tsup:
-        specifier: ^8.5.0
-        version: 8.5.0(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
   services/auth:
     dependencies:
       '@panot/types':
@@ -208,7 +141,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  services/contact:
+  services/builder:
     dependencies:
       '@panot/types':
         specifier: workspace:*
@@ -272,6 +205,73 @@ importers:
       tsx:
         specifier: ^4.20.3
         version: 4.20.3
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  services/planner:
+    dependencies:
+      '@langchain/core':
+        specifier: ^0.3.66
+        version: 0.3.66(openai@5.11.0(ws@8.18.3)(zod@4.0.10))
+      '@langchain/openai':
+        specifier: ^0.6.3
+        version: 0.6.3(@langchain/core@0.3.66(openai@5.11.0(ws@8.18.3)(zod@4.0.10)))(ws@8.18.3)
+      '@panot/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@supabase/supabase-js':
+        specifier: ^2.53.0
+        version: 2.53.0
+      axios:
+        specifier: ^1.11.0
+        version: 1.11.0
+      dotenv:
+        specifier: ^17.2.1
+        version: 17.2.1
+      express:
+        specifier: ^5.1.0
+        version: 5.1.0
+      jwt-decode:
+        specifier: ^4.0.0
+        version: 4.0.0
+      langchain:
+        specifier: ^0.3.30
+        version: 0.3.30(@langchain/core@0.3.66(openai@5.11.0(ws@8.18.3)(zod@4.0.10)))(axios@1.11.0)(openai@5.11.0(ws@8.18.3)(zod@4.0.10))(ws@8.18.3)
+      openai:
+        specifier: ^5.11.0
+        version: 5.11.0(ws@8.18.3)(zod@4.0.10)
+      pino:
+        specifier: ^9.7.0
+        version: 9.7.0
+      pino-http:
+        specifier: ^10.5.0
+        version: 10.5.0
+      uuid:
+        specifier: ^11.1.0
+        version: 11.1.0
+      zod:
+        specifier: ^4.0.10
+        version: 4.0.10
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.3
+        version: 5.0.3
+      '@types/node':
+        specifier: ^24.1.0
+        version: 24.1.0
+      nodemon:
+        specifier: ^3.1.10
+        version: 3.1.10
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@24.1.0)(typescript@5.8.3)
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.0(tsx@4.20.3)(typescript@5.8.3)(yaml@2.8.0)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3

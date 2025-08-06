@@ -5,6 +5,7 @@ import { getSbClient } from "../lib/supabase";
 import { Action } from "@panot/types";
 import { z } from "zod";
 import { UUID } from "crypto";
+import { getJobActions, deleteJobIfDone } from "./job";
 
 type ContactCreateShape = z.infer<typeof ContactCreate>;
 type ContactUpdateShape = z.infer<typeof ContactUpdate>;
@@ -36,11 +37,10 @@ async function buildApprovedActionCreate(action: Action, auth) {
     };
   try {
     const sb = getSbClient(auth);
+    const user = await getUser(auth);
     const payload = action.payload as ContactCreateShape;
     const contactChannels = payload.channels ?? [];
     delete payload.channels;
-
-    const user = await getUser(auth);
 
     const { data, error } = await sb
       .from("contacts")
@@ -51,19 +51,21 @@ async function buildApprovedActionCreate(action: Action, auth) {
     if (error) throw new Error(`Failed to create contact: ${error.message}`);
     const contactId = data.id;
     if (contactChannels.length > 0) {
-      contactChannels.map(async (channel) => {
-        const { data, error } = await sb
-          .from("channels")
-          .insert({ id: contactId, ...channel })
-          .select("*")
-          .single();
-        if (error)
-          throw new Error(
-            `Failed to create channel for contact ${contactId}: ${error.message}`
-          );
-      });
+      await Promise.all(
+        contactChannels.map(async (channel) => {
+          const { data, error } = await sb
+            .from("channels")
+            .insert({ contact_id: contactId, ...channel })
+            .select("*")
+            .single();
+          if (error)
+            throw new Error(
+              `Failed to create channel for contact ${contactId}: ${error.message}`
+            );
+        })
+      );
     }
-
+    await deleteAction(action.action_id, auth);
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message || "Failed to create contact" };
@@ -104,7 +106,7 @@ async function buildApprovedActionUpdate(action: Action, auth) {
           );
       });
     }
-
+    await deleteAction(action.action_id, auth);
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message || "Failed to update contact" };
@@ -123,7 +125,7 @@ async function buildApprovedActionDelete(action: Action, auth) {
 
     const { data, error } = await sb.from("contacts").delete().eq("id", id);
     if (error) throw new Error(`Failed to delete contact: ${error.message}`);
-
+    await deleteAction(action.action_id, auth);
     return { success: true };
   } catch (e) {
     return { success: false, error: e.message || "Failed to delete contact" };
@@ -131,36 +133,70 @@ async function buildApprovedActionDelete(action: Action, auth) {
 }
 
 async function deleteJobIfLast(actionJobId: string, auth) {
-  const sb = getSbClient(auth);
-  const { data: actionList, error } = await sb
-    .from("actions")
-    .select("*")
-    .eq("action_job_id", actionJobId);
-  if (error) throw new Error(`Failed to fetch actions: ${error.message}`);
-  if (actionList.length == 0) {
-    const { data, error } = await sb
-      .from("jobs")
-      .delete()
-      .eq("job_id", actionJobId);
+  const actions = await getJobActions(actionJobId, auth);
+  if (actions.length === 0) {
+    await deleteJobIfDone(actionJobId, auth);
   }
-  if (error) throw new Error(`Failed to delete job: ${error.message}`);
 }
 
 async function deleteAction(actionId: string, auth) {
   const sb = getSbClient(auth);
-  const { data, error } = await sb
+  const { data: action, error: fetchError } = await sb
+    .from("actions")
+    .select("job_id")
+    .eq("action_id", actionId)
+    .single();
+
+  if (fetchError)
+    throw new Error(`Failed to fetch action: ${fetchError.message}`);
+
+  const { error: deleteError } = await sb
     .from("actions")
     .delete()
     .eq("action_id", actionId);
-  if (error) throw new Error(`Failed to delete action: ${error.message}`);
+
+  if (deleteError)
+    throw new Error(`Failed to delete action: ${deleteError.message}`);
+
+  if (action?.job_id) {
+    await deleteJobIfLast(action.job_id, auth);
+  }
+}
+
+async function getAction(actionId: string, auth) {
+  const sb = getSbClient(auth);
+  const { data, error } = await sb
+    .from("actions")
+    .select("*")
+    .eq("action_id", actionId)
+    .single();
+  if (error) throw new Error(`Failed to fetch action: ${error.message}`);
+  return data;
 }
 
 actionRouter.get("/all", async (req, res, next) => {
   try {
     const auth = (req as any).userJwt;
     const sb = getSbClient(auth);
+    const user = await getUser(auth);
 
-    const { data, error } = await sb.from("actions").select("*");
+    const { data: jobs, error: jobsError } = await sb
+      .from("jobs")
+      .select("id")
+      .eq("owner_id", user.id);
+
+    if (jobsError)
+      throw new Error(`Failed to fetch jobs: ${jobsError.message}`);
+    if (!jobs || jobs.length === 0) {
+      return res.json({ success: true, data: [] });
+    }
+
+    const jobIds = jobs.map((job) => job.id);
+    const { data, error } = await sb
+      .from("actions")
+      .select("*")
+      .in("job_id", jobIds);
+
     if (error) throw new Error(`Failed to fetch actions: ${error.message}`);
     res.json({ success: true, data });
   } catch (e) {
@@ -189,12 +225,8 @@ actionRouter.delete("/:id/deny", async (req, res, next) => {
     const auth = (req as any).userJwt;
     const sb = getSbClient(auth);
 
-    const { data, error } = await sb
-      .from("actions")
-      .delete()
-      .eq("action_id", req.params.id);
-    if (error) throw new Error(`Failed to deny action: ${error.message}`);
-    res.json({ success: true, data });
+    await deleteAction(req.params.id, auth);
+    res.json({ success: true });
   } catch (e) {
     next(new Error(`Error denying action ${req.params.id}: ${e.message}`));
   }
@@ -219,12 +251,9 @@ actionRouter.post("/:id/approve", async (req, res, next) => {
         error: `Action with ID ${req.params.id} not found`,
       });
     }
+
     const result = await buildAction(action, auth);
-    const actionJobId = action.action_job_id;
-    if (result.success) {
-      await deleteAction(req.params.id, auth);
-      await deleteJobIfLast(actionJobId, auth);
-    }
+    const actionJobId = action.job_id;
     res.json(result);
   } catch (e) {
     next(new Error(`Error approving action ${req.params.id}: ${e.message}`));
