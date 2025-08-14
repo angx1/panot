@@ -14,6 +14,33 @@ const ContactIdsSchema = z.object({
 
 type ContactIdsShape = z.infer<typeof ContactIdsSchema>;
 
+// GET /:id
+// Retrieves a specific contact by ID with associated channels
+contactRouter.get("/:id", async (req, res, next) => {
+  try {
+    const sb = getSbClient((req as any).userJwt);
+    const { data, error } = await sb
+      .from("contacts")
+      .select(
+        `
+        *,
+        channels (
+          *
+        )
+      `
+      )
+      .eq("id", req.params.id)
+      .single();
+
+    if (error) throw error;
+    res.json({ success: true, data });
+  } catch (e) {
+    next(e);
+  }
+});
+
+// POST /
+// Creates a new contact with optional channels
 contactRouter.post("/", validateBody(ContactCreate), async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -45,6 +72,8 @@ contactRouter.post("/", validateBody(ContactCreate), async (req, res, next) => {
   }
 });
 
+// GET /all
+// Retrieves all contacts with their associated channels
 contactRouter.get("/all", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -61,6 +90,8 @@ contactRouter.get("/all", async (req, res, next) => {
   }
 });
 
+// PATCH /:id
+// Updates an existing contact and its channels by ID
 contactRouter.patch(
   "/:id",
   validateBody(ContactUpdate),
@@ -101,6 +132,8 @@ contactRouter.patch(
   }
 );
 
+// DELETE /:id
+// Deletes a contact by ID
 contactRouter.delete("/:id", async (req, res, next) => {
   try {
     const sb = getSbClient((req as any).userJwt);
@@ -115,6 +148,8 @@ contactRouter.delete("/:id", async (req, res, next) => {
   }
 });
 
+// POST /list
+// Retrieves multiple contacts by their IDs
 contactRouter.post(
   /*
     (Using POST because we need to send a potentially large array of IDs in the request body)

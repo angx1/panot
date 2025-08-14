@@ -1,3 +1,12 @@
+/**
+ * Job Router Endpoints:
+ * GET /all - Retrieves all jobs with their associated actions
+ * GET /:id - Gets a specific job by ID
+ * DELETE /:id/deny - Denies and deletes a specific job
+ * POST /:id/approve - Approves a job and executes all associated actions
+ * USE /:id/action - Mounts the action router for job-specific actions
+ */
+
 import { Router } from "express";
 import { getSbClient } from "../lib/supabase";
 import { z } from "zod";

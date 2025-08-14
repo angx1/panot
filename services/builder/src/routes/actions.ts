@@ -1,3 +1,11 @@
+/**
+ * Action Routes:
+ * GET /all - Fetches all actions for the authenticated user's jobs
+ * GET /:id - Retrieves a specific action by ID
+ * DELETE /:id/deny - Denies and deletes a specific action
+ * POST /:id/approve - Approves and executes a specific action (create/update/delete contact)
+ */
+
 import { Router } from "express";
 import { ContactCreate, ContactUpdate, ActionList } from "@panot/types";
 import { getUser } from "../utils/user";
