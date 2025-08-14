@@ -8,6 +8,7 @@
 
 # Node / PNPM
 node_modules/
+**/node_modules/
 .pnpm-store/
 .npm/
 
@@ -26,3 +27,4 @@ android/app/build/
 
 # SO / varios
 .DS_Store
+
