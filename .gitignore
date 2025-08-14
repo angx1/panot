@@ -1,4 +1,3 @@
-.DS_Store
 
 # enviroment variables
 .env
@@ -6,3 +5,24 @@
 
 # apps 
 .ios
+
+# Node / PNPM
+node_modules/
+.pnpm-store/
+.npm/
+
+# Expo
+.expo/
+.expo-shared/
+web-build/
+dist/
+
+# iOS / Android (si prebuild)
+ios/Pods/
+ios/build/
+android/.gradle/
+android/app/build/
+*.keystore
+
+# SO / varios
+.DS_Store
