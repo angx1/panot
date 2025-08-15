@@ -31,9 +31,9 @@ export default function Index() {
     });
   }, []);
   return (
-    <View>
+    <>
       {session ? (
-        <>
+        <View className="flex-1 justify-center items-center">
           <Text>Hello, {session.user.email}!</Text>
           <Pressable
             className="border rounded-3xl items-center p-3 w-[30%] self-center m-10"
@@ -41,10 +41,10 @@ export default function Index() {
           >
             <Text className="text-base">Sign Out</Text>
           </Pressable>
-        </>
+        </View>
       ) : (
-        <Auth />
+        <Auth /> // redirect to (auth) log-in
       )}
-    </View>
+    </>
   );
 }
