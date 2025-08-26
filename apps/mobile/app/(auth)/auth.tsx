@@ -7,6 +7,7 @@ import BottomSheet, {
 } from "@gorhom/bottom-sheet";
 import Orb from "@/components/reusable/Orb";
 import Entypo from "@expo/vector-icons/Entypo";
+import { IOSAuth } from "@/components/auth.native.ios";
 
 export default function Auth() {
   const sheetRef = useRef<BottomSheet>(null);
@@ -79,7 +80,9 @@ export default function Auth() {
         }}
       >
         <BottomSheetView className="flex-1 p-9 items-center">
-          <Text className="text-2xl font-bold"></Text>
+          <View className="w-full items-center">
+            <IOSAuth />
+          </View>
         </BottomSheetView>
       </BottomSheet>
     </GestureHandlerRootView>
