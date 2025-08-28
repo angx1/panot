@@ -1,40 +1,88 @@
-import { useCallback, useRef, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { useCallback, useRef, useState, useEffect } from "react";
+import { View, Text, Pressable, Keyboard } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, {
-  BottomSheetView,
-  useBottomSheetSpringConfigs,
-} from "@gorhom/bottom-sheet";
+import { useRouter } from "expo-router";
+import { supabase } from "@/lib/supabase";
+import * as AppleAuthentication from "expo-apple-authentication";
+
+import AuthBottomSheet from "@/components/auth/AuthBottomSheet";
+import SignUpBottomSheet from "@/components/auth/SignUpBottomSheet";
+
+import BottomSheet from "@gorhom/bottom-sheet";
 import Orb from "@/components/reusable/Orb";
 import Entypo from "@expo/vector-icons/Entypo";
-import { IOSAuth } from "@/components/auth.native.ios";
 
 export default function Auth() {
-  const sheetRef = useRef<BottomSheet>(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const snapPoints = useRef(["35%"]).current;
-  const animationConfigs = useBottomSheetSpringConfigs({
-    damping: 80,
-    overshootClamping: true,
-    restDisplacementThreshold: 0.1,
-    restSpeedThreshold: 0.1,
-    stiffness: 500,
-  });
+  const router = useRouter();
 
-  const handleOpenPress = useCallback(() => {
-    sheetRef.current?.expand();
-    setIsOpen(true);
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!mounted) return;
+      if (data.session) router.replace("/(tabs)/home");
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && session) {
+        router.replace("/(tabs)/home");
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [router]);
+
+  const loginSheetRef = useRef<BottomSheet>(null);
+  const signupSheetRef = useRef<BottomSheet>(null);
+  const signUpPhoneSheetRef = useRef<BottomSheet>(null);
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
+  const [isSignUpPhoneOpen, setIsSignUpPhoneOpen] = useState(false);
+
+  const snapPoints = useRef(["30%"]).current;
+
+  const handleOpenLoginPress = useCallback(() => {
+    loginSheetRef.current?.expand();
+    setIsLoginOpen(true);
   }, []);
 
-  const handleCloseSheet = useCallback(() => {
-    sheetRef.current?.close();
-    setIsOpen(false);
+  const handleOpenSignUpPhone = useCallback(() => {
+    signupSheetRef.current?.close();
+    signUpPhoneSheetRef.current?.expand();
+    setIsSignupOpen(false);
+    setIsSignUpPhoneOpen(true);
+  }, []);
+
+  const handleOpenLogInPhone = useCallback(() => {
+    loginSheetRef.current?.close();
+    setIsLoginOpen(false);
+  }, []);
+
+  const handleOpenSignupPress = useCallback(() => {
+    signupSheetRef.current?.expand();
+    setIsSignupOpen(true);
+  }, []);
+
+  const handleCloseSheets = useCallback(() => {
+    loginSheetRef.current?.close();
+    signupSheetRef.current?.close();
+    signUpPhoneSheetRef.current?.close();
+    Keyboard.dismiss();
+    setIsLoginOpen(false);
+    setIsSignupOpen(false);
+    setIsSignUpPhoneOpen(false);
   }, []);
 
   return (
     <GestureHandlerRootView className="flex-1">
       <Pressable
-        onPressOut={handleCloseSheet}
+        onPressOut={handleCloseSheets}
         className="flex-1 items-center justify-center bg-white"
       >
         <View className="mb-20">
@@ -43,14 +91,14 @@ export default function Auth() {
         <View className="absolute bottom-16 flex-row gap-10">
           <Pressable
             className="rounded-xl py-5 px-6 flex-row items-center gap-8 active:scale-90 transition-transform duration-200"
-            onPressOut={handleOpenPress}
+            onPressOut={handleOpenLoginPress}
           >
             <Text className="text-lg font-bold">Log in</Text>
             <Entypo name="chevron-right" size={20} color="black" />
           </Pressable>
           <Pressable
             className="bg-black rounded-2xl py-5 px-6 flex-row items-center gap-12 shadow-lg active:scale-90 transition-transform duration-200"
-            onPressOut={handleOpenPress}
+            onPressOut={handleOpenSignupPress}
           >
             <Text className="text-lg font-bold text-white">Sign up</Text>
             <Entypo name="chevron-right" size={20} color="white" />
@@ -58,33 +106,34 @@ export default function Auth() {
         </View>
       </Pressable>
 
-      <BottomSheet
-        ref={sheetRef}
-        index={isOpen ? 0 : -1}
-        enableDynamicSizing={false}
+      <AuthBottomSheet
+        bottomSheetStyle="login"
+        sheetRef={loginSheetRef as React.RefObject<BottomSheet>}
+        isOpen={isLoginOpen}
+        onStateChange={(index: number) => setIsLoginOpen(index !== -1)}
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+        buttonText="Log in"
         snapPoints={snapPoints}
-        enablePanDownToClose
-        onChange={(i) => setIsOpen(i >= 0)}
-        animationConfigs={animationConfigs}
-        enableOverDrag
-        style={{
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 50,
-          elevation: 5,
-          borderRadius: 50,
-        }}
-      >
-        <BottomSheetView className="flex-1 p-9 items-center">
-          <View className="w-full items-center">
-            <IOSAuth />
-          </View>
-        </BottomSheetView>
-      </BottomSheet>
+        alternativeAction={handleOpenLogInPhone}
+      />
+
+      <AuthBottomSheet
+        bottomSheetStyle="signup"
+        sheetRef={signupSheetRef as React.RefObject<BottomSheet>}
+        isOpen={isSignupOpen}
+        onStateChange={(index: number) => setIsSignupOpen(index !== -1)}
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_UP}
+        buttonText="Sign up"
+        snapPoints={snapPoints}
+        alternativeAction={handleOpenSignUpPhone}
+      />
+
+      <SignUpBottomSheet
+        sheetRef={signUpPhoneSheetRef as React.RefObject<BottomSheet>}
+        isOpen={isSignUpPhoneOpen}
+        onStateChange={(index: number) => setIsSignUpPhoneOpen(index !== -1)}
+        snapPoints={snapPoints}
+      />
     </GestureHandlerRootView>
   );
 }

@@ -1,40 +1,18 @@
-import { View, ScrollView, StyleSheet, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { View, Text, Pressable } from "react-native";
+import { signOutAction } from "@/lib/helpers";
 
 export default function HomeScreen() {
+  const { session } = useAuth();
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Welcome</Text>
-        </View>
-
-        <View style={styles.content}>
-          {/* Main content sections can be added here */}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View className="flex-1 justify-center items-center">
+      <Text>Hello, {session?.user.email ?? "there"}!</Text>
+      <Pressable
+        className="border rounded-3xl items-center p-3 w-[30%] self-center m-10"
+        onPress={signOutAction}
+      >
+        <Text className="text-base">Sign Out</Text>
+      </Pressable>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  content: {
-    padding: 16,
-  },
-});
