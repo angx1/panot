@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import * as AppleAuthentication from "expo-apple-authentication";
 
 import AuthBottomSheet from "@/components/auth/AuthBottomSheet";
-import SignUpBottomSheet from "@/components/auth/SignUpBottomSheet";
+import SignUpBottomSheet from "@/components/auth/SignUpWithPhoneBottomSheet";
 
 import BottomSheet from "@gorhom/bottom-sheet";
 import Orb from "@/components/reusable/Orb";
@@ -132,7 +132,7 @@ export default function Auth() {
         sheetRef={signUpPhoneSheetRef as React.RefObject<BottomSheet>}
         isOpen={isSignUpPhoneOpen}
         onStateChange={(index: number) => setIsSignUpPhoneOpen(index !== -1)}
-        snapPoints={snapPoints}
+        snapPoints={["40%"]}
       />
     </GestureHandlerRootView>
   );
