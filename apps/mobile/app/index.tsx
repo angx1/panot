@@ -1,26 +1,13 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
-import Auth from "@/components/auth";
 
 import { View, Text, Pressable } from "react-native";
 import { Session } from "@supabase/supabase-js";
+import { signOutAction } from "@/lib/helpers";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-  const signOutAction = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      return {
-        error: error.message,
-        success: false,
-      };
-    }
-    return {
-      error: null,
-      success: true,
-    };
-  };
-
   const [session, setSession] = useState<Session | null>(null);
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,7 +30,8 @@ export default function Index() {
           </Pressable>
         </View>
       ) : (
-        <Auth /> // redirect to (auth) log-in
+        // <Auth /> // redirect to (auth) log-in
+        <Redirect href="/(auth)/auth" />
       )}
     </>
   );

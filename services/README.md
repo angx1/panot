@@ -24,7 +24,7 @@
 
 | Method | Path                                | Description                  |
 | -----: | ----------------------------------- | ---------------------------- |
-|   POST | `/v1/commands/builder/contact/`     | Create contact               |
+|   POST | `/v1/commands/builde>r/contact/`    | Create contact               |
 |    GET | `/v1/commands/builder/contact/:id`  | Get contact by ID            |
 |    GET | `/v1/commands/builder/contact/all`  | List user contacts           |
 |  PATCH | `/v1/commands/builder/contact/:id`  | Update contact               |
