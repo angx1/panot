@@ -4,12 +4,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
   SafeAreaView,
-  KeyboardAvoidingView,
-  Platform,
   Keyboard,
-  Pressable,
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -47,7 +43,6 @@ export default function SignUpScreen() {
   const [isValidating, setIsValidating] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
-  // Set Spain as default country on mount if not already set
   useEffect(() => {
     if (
       !selectedCountry ||
@@ -56,10 +51,8 @@ export default function SignUpScreen() {
     ) {
       setSelectedCountry?.(DEFAULT_COUNTRY);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [selectedCountry, setSelectedCountry]);
 
-  // Keyboard event listeners
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       "keyboardDidShow",
@@ -97,7 +90,6 @@ export default function SignUpScreen() {
     }
 
     try {
-      // If country is selected, use it for validation
       if (countryCode) {
         const result = phone(input, { country: countryCode });
         return {
@@ -108,7 +100,6 @@ export default function SignUpScreen() {
             : "Invalid phone number for selected country",
         };
       } else {
-        // Try to detect country from phone number
         const result = phone(input);
         return {
           ...result,
@@ -125,21 +116,26 @@ export default function SignUpScreen() {
         countryIso2: null,
         countryIso3: null,
         countryCode: null,
-        errorMessage: "Error validating phone number",
+        errorMessage: error,
       };
     }
   };
 
   const handlePhoneNumberChange = (text: string) => {
-    // Clean the input to only allow digits
     const cleaned = text.replace(/\D/g, "");
     setPhoneNumber(cleaned);
 
-    // Validate in real-time with debouncing
     setIsValidating(true);
     setTimeout(() => {
       const validation = validatePhoneNumber(cleaned, selectedCountry?.cca2);
-      setValidationResult(validation);
+      setValidationResult({
+        ...validation,
+        errorMessage:
+          typeof validation.errorMessage === "string" ||
+          validation.errorMessage === undefined
+            ? validation.errorMessage
+            : String(validation.errorMessage),
+      });
       setIsValidating(false);
     }, 300);
   };
@@ -148,29 +144,10 @@ export default function SignUpScreen() {
     if (!validationResult.isValid || !validationResult.phoneNumber) {
       return;
     }
-
-    // Use the validated and formatted phone number
     const finalPhoneNumber = validationResult.phoneNumber;
+    // TODO
 
-    // TODO: Navigate to OTP verification page with the validated phone number
-    console.log("Validated phone number:", finalPhoneNumber);
     // router.push('/(auth)/(sign-up)/verifyOTP');
-  };
-
-  const getValidationMessage = () => {
-    if (isValidating) {
-      return "Validating...";
-    }
-
-    if (validationResult.errorMessage) {
-      return validationResult.errorMessage;
-    }
-
-    if (validationResult.isValid && validationResult.formattedNumber) {
-      return `✓ Valid: ${validationResult.formattedNumber}`;
-    }
-
-    return "";
   };
 
   const getValidationIcon = () => {

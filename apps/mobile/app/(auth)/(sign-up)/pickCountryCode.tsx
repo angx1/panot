@@ -80,7 +80,6 @@ export default function PickCountryCode() {
     router.back();
   };
 
-  // Remove the border-b class to remove the lines between list items
   const renderCountryItem = ({ item }: { item: Country }) => (
     <TouchableOpacity
       className="flex-row items-center p-4 active:bg-gray-50"
