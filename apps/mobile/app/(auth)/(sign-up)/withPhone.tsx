@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   View,
   Text,
@@ -32,6 +32,7 @@ interface PhoneValidationResult {
 export default function SignUpScreen() {
   const { selectedCountry, setSelectedCountry } = useCountry();
   const [phoneNumber, setPhoneNumber] = useState("");
+  const inputRef = useRef<TextInput>(null);
   const [validationResult, setValidationResult] =
     useState<PhoneValidationResult>({
       isValid: false,
@@ -40,8 +41,6 @@ export default function SignUpScreen() {
       countryIso3: null,
       countryCode: null,
     });
-  const [isValidating, setIsValidating] = useState(false);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
     if (
@@ -54,27 +53,29 @@ export default function SignUpScreen() {
   }, [selectedCountry, setSelectedCountry]);
 
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        setIsKeyboardVisible(true);
-      }
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
-      () => {
-        setIsKeyboardVisible(false);
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener?.remove();
-      keyboardDidHideListener?.remove();
-    };
-  }, []);
+    if (phoneNumber && phoneNumber.length >= 9) {
+      const validation = validatePhoneNumber(
+        phoneNumber,
+        selectedCountry?.cca2
+      );
+      setValidationResult(validation);
+    } else {
+      setValidationResult({
+        isValid: false,
+        phoneNumber: null,
+        countryIso2: null,
+        countryIso3: null,
+        countryCode: null,
+      });
+    }
+  }, [phoneNumber, selectedCountry?.cca2]);
 
   const handleCountrySelect = () => {
-    router.push("/(auth)/(sign-up)/pickCountryCode");
+    try {
+      router.push("/(auth)/(sign-up)/pickCountryCode");
+    } catch (error) {
+      // no-op
+    }
   };
 
   const validatePhoneNumber = (input: string, countryCode?: string) => {
@@ -116,7 +117,8 @@ export default function SignUpScreen() {
         countryIso2: null,
         countryIso3: null,
         countryCode: null,
-        errorMessage: error,
+        errorMessage:
+          error instanceof Error ? error.message : "Validation error",
       };
     }
   };
@@ -124,56 +126,25 @@ export default function SignUpScreen() {
   const handlePhoneNumberChange = (text: string) => {
     const cleaned = text.replace(/\D/g, "");
     setPhoneNumber(cleaned);
-
-    setIsValidating(true);
-    setTimeout(() => {
-      const validation = validatePhoneNumber(cleaned, selectedCountry?.cca2);
-      setValidationResult({
-        ...validation,
-        errorMessage:
-          typeof validation.errorMessage === "string" ||
-          validation.errorMessage === undefined
-            ? validation.errorMessage
-            : String(validation.errorMessage),
-      });
-      setIsValidating(false);
-    }, 300);
   };
 
   const handleContinue = () => {
     if (!validationResult.isValid || !validationResult.phoneNumber) {
       return;
     }
-    const finalPhoneNumber = validationResult.phoneNumber;
-    // TODO
-
-    // router.push('/(auth)/(sign-up)/verifyOTP');
+    // TODO: Navigate to next step or send verification code
   };
 
-  const getValidationIcon = () => {
-    if (isValidating) {
-      return <Ionicons name="time" size={16} color="#6B7280" />;
-    }
-
-    if (validationResult.isValid) {
-      return <Ionicons name="checkmark-circle" size={16} color="#10B981" />;
-    }
-
-    if (validationResult.errorMessage) {
-      return <Ionicons name="alert-circle" size={16} color="#EF4444" />;
-    }
-
-    return null;
-  };
-
-  const isPhoneValid = validationResult.isValid && validationResult.phoneNumber;
+  const isPhoneValid = useMemo(() => {
+    return validationResult.isValid && validationResult.phoneNumber !== null;
+  }, [validationResult.isValid, validationResult.phoneNumber]);
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 px-6 pt-8">
         <View className="mb-10">
           <Text className="text-3xl font-bold text-gray-900 mb-3">
-            Enter your phone number
+            What&apos;s your phone number?
           </Text>
           <Text className="text-base text-gray-600 leading-6">
             We&apos;ll send you a verification code to verify your phone number
@@ -181,72 +152,77 @@ export default function SignUpScreen() {
         </View>
 
         <View className="mb-8">
-          <Text className="text-sm font-medium text-gray-700 mb-3">
-            Phone Number
-          </Text>
-
           <View className="flex-row items-center border border-gray-200 rounded-xl overflow-hidden">
             <TouchableOpacity
               onPress={handleCountrySelect}
               className="flex-row items-center px-4 py-4 border-r border-gray-200 bg-white active:bg-gray-50"
             >
               <View>
-                <Text className="text-base font-medium text-gray-900">
+                <Text className="text-xl font-medium text-gray-900">
                   {selectedCountry?.callingCode || DEFAULT_COUNTRY.callingCode}
-                </Text>
-                <Text className="text-xs text-gray-500">
-                  {selectedCountry?.name?.common || DEFAULT_COUNTRY.name.common}
                 </Text>
               </View>
               <Ionicons
                 name="chevron-down"
                 size={16}
-                color="#6B7280"
-                style={{ marginLeft: 12 }}
+                color="#000"
+                style={{ marginLeft: 8 }}
               />
             </TouchableOpacity>
-            <View className="flex-1 pr-4">
+            <View className="flex-1 pr-4 justify-center">
               <TextInput
-                className="flex-1 px-4 py-4 text-xl text-gray-900 bg-white"
-                placeholderTextColor="#9CA3AF"
+                ref={inputRef}
+                className="px-4 py-4 text-xl font-medium text-gray-900 bg-white"
                 value={phoneNumber}
                 onChangeText={handlePhoneNumberChange}
                 keyboardType="phone-pad"
                 maxLength={15}
                 textContentType="telephoneNumber"
+                textAlignVertical="top"
+                style={{ textAlignVertical: "top" }}
+                autoFocus={true}
                 autoComplete="tel"
-                placeholder="Enter phone number"
+                importantForAutofill="yes"
+                autoCorrect={false}
+                spellCheck={false}
               />
             </View>
-
-            {phoneNumber.length > 0 && (
-              <View className="px-4 py-4 ">{getValidationIcon()}</View>
-            )}
-            {validationResult.isValid &&
-              validationResult.countryIso2 &&
-              validationResult.countryIso2 !== selectedCountry?.cca2}
           </View>
         </View>
 
-        {/* Floating Continue Button */}
         <View
-          className={`absolute left-6 right-6 z-50 ${
-            isKeyboardVisible
-              ? "bottom-[40%]" // Above keyboard
-              : "bottom-10" // At bottom when keyboard closed
-          }`}
+          style={{
+            position: "absolute",
+            left: 24,
+            right: 24,
+            zIndex: 50,
+            bottom: phoneNumber.length === 0 ? "45%" : "39%",
+          }}
         >
           <TouchableOpacity
             onPress={handleContinue}
             disabled={!isPhoneValid}
-            className={`w-full py-4 rounded-xl shadow-lg ${
-              isPhoneValid ? "bg-black" : "bg-gray-300"
-            }`}
+            style={{
+              width: "100%",
+              paddingVertical: 16,
+              borderRadius: 12,
+              backgroundColor: isPhoneValid ? "#000000" : "#D1D5DB",
+              shadowColor: isPhoneValid ? "#000" : "transparent",
+              shadowOffset: isPhoneValid
+                ? { width: 0, height: 4 }
+                : { width: 0, height: 0 },
+              shadowOpacity: isPhoneValid ? 0.25 : 0,
+              shadowRadius: isPhoneValid ? 6 : 0,
+              elevation: isPhoneValid ? 6 : 0,
+            }}
           >
             <Text
-              className={`text-center font-bold text-lg ${
-                isPhoneValid ? "text-white" : "text-gray-500"
-              }`}
+              style={{
+                textAlign: "center",
+                fontWeight: "bold",
+                fontSize: 18,
+                color: "#FFFFFF",
+              }}
             >
               Continue
             </Text>

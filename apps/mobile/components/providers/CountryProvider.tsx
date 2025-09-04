@@ -15,18 +15,23 @@ interface CountryContextType {
 const CountryContext = createContext<CountryContextType | undefined>(undefined);
 
 const defaultCountry: Country = {
-  cca2: "US",
-  name: { common: "United States" },
-  callingCode: "1",
-  flag: "🇺🇸",
+  cca2: "ES",
+  name: { common: "Spain" },
+  callingCode: "+34",
+  flag: "🇪🇸",
 };
 
 export function CountryProvider({ children }: { children: ReactNode }) {
   const [selectedCountry, setSelectedCountry] =
     useState<Country>(defaultCountry);
 
+  const contextValue = React.useMemo(
+    () => ({ selectedCountry, setSelectedCountry }),
+    [selectedCountry]
+  );
+
   return (
-    <CountryContext.Provider value={{ selectedCountry, setSelectedCountry }}>
+    <CountryContext.Provider value={contextValue}>
       {children}
     </CountryContext.Provider>
   );

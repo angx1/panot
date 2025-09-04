@@ -13,15 +13,10 @@ export default function AuthLayout() {
         <Stack.Screen
           name="(sign-up)/withPhone"
           options={{
-            presentation: "modal",
+            presentation: "card",
           }}
         />
-        <Stack.Screen
-          name="(sign-up)/pickCountryCode"
-          options={{
-            presentation: "modal",
-          }}
-        />
+
         <Stack.Screen
           name="(log-in)/withPhone"
           options={{
