@@ -11,12 +11,14 @@ export default function AuthLayout() {
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="auth" />
         <Stack.Screen
-          name="(sign-up)/withPhone"
+          name="(sign-up)"
           options={{
-            presentation: "card",
+            presentation: "fullScreenModal",
+            gestureEnabled: true,
+            gestureDirection: "vertical",
+            sheetGrabberVisible: true,
           }}
         />
-
         <Stack.Screen
           name="(log-in)/withPhone"
           options={{

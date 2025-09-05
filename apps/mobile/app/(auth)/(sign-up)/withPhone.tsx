@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Keyboard,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -43,11 +44,7 @@ export default function SignUpScreen() {
     });
 
   useEffect(() => {
-    if (
-      !selectedCountry ||
-      !selectedCountry.callingCode ||
-      selectedCountry.callingCode !== DEFAULT_COUNTRY.callingCode
-    ) {
+    if (!selectedCountry || !selectedCountry.callingCode) {
       setSelectedCountry?.(DEFAULT_COUNTRY);
     }
   }, [selectedCountry, setSelectedCountry]);
@@ -72,9 +69,11 @@ export default function SignUpScreen() {
 
   const handleCountrySelect = () => {
     try {
-      router.push("/(auth)/(sign-up)/pickCountryCode");
+      //router.push("/(auth)/(sign-up)/pickCountryCode");
+      router.navigate("/(auth)/(sign-up)/pickCountryCode");
     } catch (error) {
       // no-op
+      console.error("Navigation error:", error);
     }
   };
 
@@ -93,6 +92,7 @@ export default function SignUpScreen() {
     try {
       if (countryCode) {
         const result = phone(input, { country: countryCode });
+        console.log("result", result);
         return {
           ...result,
           formattedNumber: result.isValid ? result.phoneNumber : undefined,
@@ -124,8 +124,9 @@ export default function SignUpScreen() {
   };
 
   const handlePhoneNumberChange = (text: string) => {
-    const cleaned = text.replace(/\D/g, "");
-    setPhoneNumber(cleaned);
+    //const cleaned = text.replace(/\D/g, "");
+    //setPhoneNumber(cleaned);
+    setPhoneNumber(text);
   };
 
   const handleContinue = () => {
@@ -152,13 +153,16 @@ export default function SignUpScreen() {
         </View>
 
         <View className="mb-8">
-          <View className="flex-row items-center border border-gray-200 rounded-xl overflow-hidden">
+          <View className="flex-row items-center overflow-hidden">
             <TouchableOpacity
               onPress={handleCountrySelect}
-              className="flex-row items-center px-4 py-4 border-r border-gray-200 bg-white active:bg-gray-50"
+              className="flex-row items-center px-4 py-4 border-r border-gray-200 bg-white active:bg-gray-50 border border-gray-200 rounded-xl"
             >
               <View>
-                <Text className="text-xl font-medium text-gray-900">
+                <Text
+                  className="text-xl font-medium text-gray-900 pl-2"
+                  style={{ fontSize: 20 }}
+                >
                   {selectedCountry?.callingCode || DEFAULT_COUNTRY.callingCode}
                 </Text>
               </View>
@@ -172,19 +176,26 @@ export default function SignUpScreen() {
             <View className="flex-1 pr-4 justify-center">
               <TextInput
                 ref={inputRef}
-                className="px-4 py-4 text-xl font-medium text-gray-900 bg-white"
+                className="px-4 text-xl font-medium text-gray-900 bg-white"
                 value={phoneNumber}
                 onChangeText={handlePhoneNumberChange}
                 keyboardType="phone-pad"
                 maxLength={15}
                 textContentType="telephoneNumber"
-                textAlignVertical="top"
-                style={{ textAlignVertical: "top" }}
                 autoFocus={true}
                 autoComplete="tel"
                 importantForAutofill="yes"
                 autoCorrect={false}
                 spellCheck={false}
+                placeholder="Phone number"
+                placeholderTextColor="#A0A0A0"
+                textAlign="left"
+                style={{
+                  fontSize: 20,
+                  height: 56,
+                  paddingTop: 0,
+                  paddingBottom: 0,
+                }}
               />
             </View>
           </View>
