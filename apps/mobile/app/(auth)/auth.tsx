@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { View, Text, Pressable, Keyboard } from "react-native";
+import { View, Pressable, Keyboard } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
@@ -13,8 +13,8 @@ import * as AppleAuthentication from "expo-apple-authentication";
 
 import AuthBottomSheet from "@/components/auth/AuthBottomSheet";
 import BottomSheet from "@gorhom/bottom-sheet";
-import Orb from "@/components/reusable/Orb";
-import Entypo from "@expo/vector-icons/Entypo";
+import Home from "@/components/reusable/Home";
+import Button from "@/components/reusable/Button";
 
 const LOGIN_SNAP_POINTS = ["30%"];
 const SIGNUP_SNAP_POINTS = ["30%"];
@@ -34,7 +34,7 @@ export default function Auth() {
     const checkSession = async () => {
       const { data } = await supabase.auth.getSession();
       if (mounted && data.session) {
-        router.replace("/(tabs)/home");
+        router.replace("/(tabs)/main");
       }
     };
 
@@ -44,7 +44,7 @@ export default function Auth() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        router.replace("/(tabs)/home");
+        router.replace("/(tabs)/main");
       }
     });
 
@@ -100,23 +100,53 @@ export default function Auth() {
         className="flex-1 items-center justify-center bg-white"
       >
         <View className="mb-20">
-          <Orb size={260} />
+          <Home />
         </View>
         <View className="absolute bottom-16 flex-row gap-10">
-          <Pressable
-            className="rounded-xl py-5 px-6 flex-row items-center gap-8 active:scale-90 transition-transform duration-200"
-            onPressOut={openLoginSheet}
-          >
-            <Text className="text-lg font-bold">Log in</Text>
-            <Entypo name="chevron-right" size={20} color="black" />
-          </Pressable>
-          <Pressable
-            className="bg-black rounded-2xl py-5 px-6 flex-row items-center gap-12 shadow-lg active:scale-90 transition-transform duration-200"
-            onPressOut={openSignupSheet}
-          >
-            <Text className="text-lg font-bold text-white">Sign up</Text>
-            <Entypo name="chevron-right" size={20} color="white" />
-          </Pressable>
+          <Button
+            text="Log in"
+            variant="secondary"
+            rightIcon="chevron-forward"
+            onPress={openLoginSheet}
+            gap={22}
+            style={{
+              backgroundColor: "transparent",
+              borderWidth: 0,
+              borderRadius: 12,
+              paddingVertical: 20,
+              paddingHorizontal: 24,
+              shadowOpacity: 0,
+              elevation: 0,
+            }}
+            textStyle={{
+              fontSize: 16,
+              fontWeight: "bold",
+              color: "#000000",
+            }}
+          />
+          <Button
+            text="Sign up"
+            variant="primary"
+            rightIcon="chevron-forward"
+            onPress={openSignupSheet}
+            gap={48}
+            style={{
+              backgroundColor: "#000000",
+              borderRadius: 16,
+              paddingVertical: 20,
+              paddingHorizontal: 24,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.25,
+              shadowRadius: 6,
+              elevation: 6,
+            }}
+            textStyle={{
+              fontSize: 16,
+              fontWeight: "bold",
+              color: "#FFFFFF",
+            }}
+          />
         </View>
       </Pressable>
 

@@ -2,7 +2,7 @@ import { useAuth } from "@/components/providers/AuthProvider";
 import { View, Text, Pressable } from "react-native";
 import { signOutAction } from "@/lib/helpers";
 
-export default function HomeScreen() {
+export default function MainScreen() {
   const { session } = useAuth();
   return (
     <View className="flex-1 justify-center items-center">

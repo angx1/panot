@@ -39,7 +39,32 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-apple-authentication"
+      "expo-apple-authentication",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            {
+              "fontFamily": "Maria",
+              "fontDefinitions": [
+                {
+                  "path": "./assets/fonts/Maria.otf",
+                  "weight": 800
+                }
+              ]
+            },
+            {
+              "fontFamily": "Mersad Semibold",
+              "fontDefinitions": [
+                {
+                  "path": "./assets/fonts/Mersad-SemiBold.ttf",
+                  "weight": 800
+                }
+              ]
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

@@ -13,10 +13,8 @@ export default function AuthLayout() {
         <Stack.Screen
           name="(sign-up)"
           options={{
-            presentation: "fullScreenModal",
+            presentation: "transparentModal",
             gestureEnabled: true,
-            gestureDirection: "vertical",
-            sheetGrabberVisible: true,
           }}
         />
         <Stack.Screen
