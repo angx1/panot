@@ -39,7 +39,7 @@ export default function Home() {
           panot
         </Text>
       </View>
-      <Text style={{ fontFamily: "Maria", fontSize: 20, color: "#000" }}>
+      <Text style={{ /*fontFamily: "Maria",*/ fontSize: 20, color: "#000" }}>
         Redefining your{" "}
         <Text style={{ color: "#aaa", fontFamily: "Maria" }}>
           personal interactions
