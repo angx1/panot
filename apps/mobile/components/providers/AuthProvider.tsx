@@ -13,13 +13,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Timeout para evitar carga infinita
     const timeout = setTimeout(() => {
       if (mounted) {
         console.log("AuthProvider: Timeout reached, setting loading to false");
         setLoading(false);
       }
-    }, 10000); // 10 segundos timeout
+    }, 10000);
 
     supabase.auth
       .getSession()
@@ -49,10 +48,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_e, s) => {
-      console.log(
-        "AuthProvider: Auth state changed:",
-        s ? "Logged in" : "Logged out"
-      );
       setSession(s);
     });
 

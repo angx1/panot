@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { router } from "expo-router";
 
 export const signOutAction = async () => {
   const { error } = await supabase.auth.signOut();
@@ -8,6 +9,7 @@ export const signOutAction = async () => {
       success: false,
     };
   }
+  router.replace("/");
   return {
     error: null,
     success: true,
