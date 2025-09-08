@@ -12,16 +12,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setSession(data.session ?? null);
-      setLoading(false);
-    });
+
+    // Timeout para evitar carga infinita
+    const timeout = setTimeout(() => {
+      if (mounted) {
+        console.log("AuthProvider: Timeout reached, setting loading to false");
+        setLoading(false);
+      }
+    }, 10000); // 10 segundos timeout
+
+    supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (!mounted) return;
+
+        if (error) {
+          console.error("AuthProvider: Error getting session:", error);
+        } else {
+          console.log(
+            "AuthProvider: Session retrieved:",
+            data.session ? "Found" : "None"
+          );
+        }
+
+        setSession(data.session ?? null);
+        setLoading(false);
+        clearTimeout(timeout);
+      })
+      .catch((error) => {
+        if (!mounted) return;
+        console.error("AuthProvider: Error in getSession:", error);
+        setLoading(false);
+        clearTimeout(timeout);
+      });
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+    } = supabase.auth.onAuthStateChange((_e, s) => {
+      console.log(
+        "AuthProvider: Auth state changed:",
+        s ? "Logged in" : "Logged out"
+      );
+      setSession(s);
+    });
+
     return () => {
       mounted = false;
+      clearTimeout(timeout);
       subscription.unsubscribe();
     };
   }, []);

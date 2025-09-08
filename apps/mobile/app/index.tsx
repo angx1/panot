@@ -5,11 +5,18 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { View, Pressable, Keyboard } from "react-native";
+import {
+  View,
+  Pressable,
+  Keyboard,
+  ActivityIndicator,
+  Text,
+} from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { supabase } from "@/lib/supabase";
 import * as AppleAuthentication from "expo-apple-authentication";
+import { useAuth } from "@/components/providers/AuthProvider";
 
 import AuthBottomSheet from "@/components/auth/AuthBottomSheet";
 import BottomSheet from "@gorhom/bottom-sheet";
@@ -19,7 +26,8 @@ import Button from "@/components/reusable/Button";
 const LOGIN_SNAP_POINTS = ["30%"];
 const SIGNUP_SNAP_POINTS = ["30%"];
 
-export default function Auth() {
+export default function IndexScreen() {
+  const { session, isLoading } = useAuth();
   const router = useRouter();
 
   const loginSheetRef = useRef<BottomSheet>(null);
@@ -32,6 +40,14 @@ export default function Auth() {
     let mounted = true;
 
     const checkSession = async () => {
+      // Si ya tenemos sesión desde el AuthProvider, redirigir
+      if (!isLoading && session) {
+        console.log("Index: User has session, redirecting to main");
+        router.replace("/(tabs)/main");
+        return;
+      }
+
+      // Double-check con supabase directamente
       const { data } = await supabase.auth.getSession();
       if (mounted && data.session) {
         router.replace("/(tabs)/main");
@@ -52,7 +68,7 @@ export default function Auth() {
       mounted = false;
       subscription?.unsubscribe();
     };
-  }, [router]);
+  }, [session, isLoading, router]);
 
   const loginSnapPoints = useMemo(() => LOGIN_SNAP_POINTS, []);
   const signUpSnapPoints = useMemo(() => SIGNUP_SNAP_POINTS, []);
@@ -93,6 +109,18 @@ export default function Auth() {
     []
   );
 
+  // Mostrar loading mientras se determina el estado de autenticación
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-white">
+        <ActivityIndicator size="large" color="#000" />
+        <Text className="mt-4 text-lg">Inicializando...</Text>
+      </View>
+    );
+  }
+
+  // Si hay sesión, el useEffect se encargará de la redirección
+  // Mientras tanto, mostramos la pantalla de auth
   return (
     <GestureHandlerRootView className="flex-1">
       <Pressable

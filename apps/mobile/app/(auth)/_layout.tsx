@@ -9,7 +9,6 @@ export default function AuthLayout() {
   return (
     <CountryProvider>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="auth" />
         <Stack.Screen
           name="(sign-up)"
           options={{

@@ -1,10 +1,8 @@
-import { Tabs, Redirect } from "expo-router";
-import { useAuth } from "@/components/providers/AuthProvider";
+import { Tabs } from "expo-router";
 
 export default function TabsLayout() {
-  const { session, isLoading } = useAuth();
-  if (isLoading) return null;
-  if (!session) return <Redirect href="/(auth)/auth" />;
+  // La lógica de autenticación se maneja en index.tsx
+  // Este layout solo se muestra cuando el usuario está autenticado
   return (
     <Tabs
       screenOptions={{
